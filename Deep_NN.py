@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Sep 26 22:26:18 2019
+Created on Sat Sep 28 15:09:29 2019
 
-@author: ithan
+@author: Ithan
 """
+
 
 import random
 import tensorflow as tf
@@ -20,7 +20,7 @@ K.clear_session()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1.0, iteraciones=100, cantidad_acciones=5, estado=[]):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1.0, iteraciones=100, cantidad_acciones=5, estado=np.array([])):
         
         self.aprendizaje = aprendizaje
         self.descuento = descuento # Descuennto de la recompensa futura
@@ -89,16 +89,13 @@ class Deep_NN:
 if __name__ == "__main__":
 
 
-    
-    
-    
-
- """   
-    agente = Deep_NN(cantidad_acciones=5, estado)
+    agente = Deep_NN(estado=img)
+    agente.decision(estado=img)
     # agent.load("./save/cartpole-dqn.h5")
+    
+    """
     done = False
     batch_size = 32
-
     for e in range(agente.episodios):
         state = env.reset()# reseteo el estaado y le entrego la imagen nuevamente
         
@@ -118,7 +115,6 @@ if __name__ == "__main__":
                 agent.replay(batch_size)
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
-
 cnn.fit(
     entrenamiento_generador,
     steps_per_epoch=pasos,
@@ -126,4 +122,3 @@ cnn.fit(
     validation_data=validacion_generador,
     validation_steps=validation_steps)
 """
-        
