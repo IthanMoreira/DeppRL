@@ -4,8 +4,6 @@ Created on Sat Sep 28 15:09:29 2019
 
 @author: Ithan
 """
-
-
 import random
 import tensorflow as tf
 import numpy as np
