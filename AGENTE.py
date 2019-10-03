@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sep 28 15:09:29 2019
+Created on Wed Oct  2 18:52:38 2019
 
-@author: Ithan
+@author: javie
 """
+
 import random
-import tensorflow as tf
+#import tensorflow as tf
 import numpy as np
 from Simulador import Simulador as simu 
+"""
 from tensorflow.python.keras import optimizers
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dropout, Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
 from collections import deque
-
-
 
 K.clear_session()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
@@ -86,30 +86,22 @@ class Deep_NN:
 
     def guardar_modelo(self, name):
         self.model.save_weights(name)
-        
+"""        
 if __name__ == "__main__":
-    
+
 
     #agente = Deep_NN(estado=img)
     #agente.decision(estado=img)
-    #agent.load("./save/cartpole-dqn.h5")
-   
-    
+    # agent.load("./save/cartpole-dqn.h5")
     sim = simu()
     sim.moveTarget('m_Sphere', 'Cylinder')
+    sim.orientationTarget('m_Sphere')
     sim.grabObject('m_Sphere', 'Cylinder')
-    sim.moveTarget('m_Sphere', 'customizableTable_tableTop#0')
-    sim.dropObject('m_Sphere','customizableTable_tableTop#0')
-    sim.returnHome()
-    """
-    sim.grabObject('m_Sphere', 'Cylinder')
-
-    sim.dropObject('m_Sphere','customizableTable_tableTop')
-
     sim.moveTarget('m_Sphere', 'Cuboid')
     sim.grabObject('m_Sphere', 'Cuboid')
+    sim.dropObject('m_Sphere','customizableTable_tableTop')
     sim.dropObject('m_Sphere','customizableTable_tableTop#')
-    """
+
     """
     done = False
     batch_size = 32
