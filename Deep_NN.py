@@ -92,6 +92,7 @@ if __name__ == "__main__":
     sim = simu()
 
     est=sim.kinectVisionRGB()
+    print("hola")
     agente = Deep_NN(estado=est)
     print(agente.decision(est))
     
