@@ -19,26 +19,6 @@ if clientID!=-1:
     
     emptyBuff = bytearray()
 
-
-
-
-res,v0=vrep.simxGetObjectHandle(clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)
-res,resolution,image=vrep.simxGetVisionSensorImage(clientID,v0,0,vrep.simx_opmode_streaming)
-res,resolution,image=vrep.simxGetVisionSensorImage(clientID,v0,0,vrep.simx_opmode_streaming)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "renombrar objetos "
 
 [returnCode,target]=vrep.simxGetObjectHandle(clientID,'m_Sphere',vrep.simx_opmode_blocking)
@@ -184,7 +164,7 @@ returnCode=vrep.simxSetObjectPosition(clientID,target,-1,position2,vrep.simx_opm
 
 print returnCode;
 
-
+"""
 "Vision kinect"
 
 res,v0=vrep.simxGetObjectHandle(clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)
@@ -193,11 +173,11 @@ res,v1=vrep.simxGetObjectHandle(clientID,'kinect_depth',vrep.simx_opmode_oneshot
 res,resolution,image=vrep.simxGetVisionSensorImage(clientID,v0,0,vrep.simx_opmode_streaming)
 res,resolution,image1=vrep.simxGetVisionSensorImage(clientID,v1,0,vrep.simx_opmode_streaming)
 
-print (image)
+print image
 
 print "----------------------------------------------------------------------------------------"
 
-print (v0)
+print v0
 
 """
 
@@ -224,10 +204,7 @@ print v0
 
 
 "Desconexion"
- res,v0=vrep.simxGetObjectHandle(clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)
-res,resolution,image=vrep.simxGetVisionSensorImage(clientID,v0,0,vrep.simx_opmode_streaming)
-res,resolution,image=vrep.simxGetVisionSensorImage(clientID,v0,0,vrep.simx_opmode_streaming)
-
+ 
 
 vrep.simxAddStatusbarMessage(clientID,'comunicacion finalizada',vrep.simx_opmode_blocking)
 vrep.simxFinish(-1)

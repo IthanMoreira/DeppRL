@@ -90,11 +90,13 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
+
     est=sim.kinectVisionRGB()
     agente = Deep_NN(estado=est)
     print(agente.decision(est))
     
-    
+
+
     #agent.load("./save/cartpole-dqn.h5")
    
     """
@@ -117,35 +119,29 @@ if __name__ == "__main__":
     """
     done = False
     batch_size = 32
-    sim = simu()
-    agente = Deep_NN(estado=sim.kinectVisionRGB())
-    
-    
     for e in range(agente.episodios):
-        state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+        state = env.reset()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
            
             action = agente.decision(state)
-            next_state, reward, done, _ =  sim.moveTarget('m_Sphere', 'Cylinder')
+            next_state, reward, done, _ = env.step(action) # segun la accion retorna desde el entorno todo eso
             reward = reward if not done else -1
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             if done:
                 print("episode: {}/{}, score: {}, e: {:.2}"
-                      .format(e, self.episodios, time, agente.epsilon))
+                      .format(e, self.episodios, time, agent.epsilon))
                 break
-            if len(agente.memory) > batch_size:
-                agente.replay(batch_size)
+            if len(agent.memory) > batch_size:
+                agent.replay(batch_size)
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
-    """
-    """
 cnn.fit(
     entrenamiento_generador,
     steps_per_epoch=pasos,
     epochs=epocas,
     validation_data=validacion_generador,
     validation_steps=validation_steps)
-    """
+"""

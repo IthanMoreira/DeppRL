@@ -9,8 +9,7 @@ import math
 import numpy as np
 import time
 class Simulador(object):
-
-
+ 
     def __init__(self):
         self.clientID,self.home = self.connectRobot()
         
@@ -23,17 +22,13 @@ class Simulador(object):
     def connectRobot(self):
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
-       
+        print (clientID)
         if clientID!=-1:
             print ('Conectado a la remote API server with clientID: ', clientID)
             vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot_wait) 
             errorCode1, handleJoint = vrep.simxGetObjectHandle(clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
             returnCode,home=vrep.simxGetObjectPosition(clientID,handleJoint,-1,vrep.simx_opmode_blocking)#deje estatico la primera posicion de target
             vrep.simxSetObjectOrientation(clientID,handleJoint,-1,(0,math.pi,0),vrep.simx_opmode_oneshot)
-            errorCode,rgb=vrep.simxGetObjectHandle(clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)
-            res,resolution,imegenRgb=vrep.simxGetVisionSensorImage(clientID,rgb,0,vrep.simx_opmode_streaming)
-
-
             time.sleep(1)
         else:
             print ('Error de conexion a remote API server')
@@ -183,9 +178,11 @@ class Simulador(object):
     #end of orientationTarget method
     
     def kinectVisionRGB(self):
-        errorCode,rgb=vrep.simxGetObjectHandle(self.clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)        
+        errorCode,rgb=vrep.simxGetObjectHandle(self.clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)
+
         if errorCode==vrep.simx_error_noerror :        
-            res,resolution,imegenRgb=vrep.simxGetVisionSensorImage(self.clientID,rgb,0,vrep.simx_opmode_streaming)
+            res,resolution,imegenRgb=vrep.simxGetVisionSensorImage(self.clientID,rgb,0,vrep.simx_opmode_buffer)
+            
             imgRgb = np.array(imegenRgb,dtype=np.uint8)
             imgRgb.resize([resolution[1],resolution[0],3])
         
