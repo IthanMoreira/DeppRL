@@ -12,7 +12,7 @@ class Simulador(object):
  
     def __init__(self):
         self.clientID,self.home = self.connectRobot()
-        
+        self.home[2]=(self.home[2]-0.2)
         if self.clientID != -1:
             self.actionNumber = 1
             #self.performAnAction(4) #go home
@@ -22,7 +22,6 @@ class Simulador(object):
     def connectRobot(self):
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
-        print (clientID)
         if clientID!=-1:
             print ('Conectado a la remote API server with clientID: ', clientID)
             vrep.simxStartSimulation(clientID, vrep.simx_opmode_oneshot_wait) 
@@ -57,86 +56,38 @@ class Simulador(object):
     #end of orientationTarget method
     """  
 
-    def moveTarget(self, moveTarget, Object):
+    def movTarget(self, moveTarget, Object):
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
         errorCode, obj = vrep.simxGetObjectHandle(self.clientID, Object, vrep.simx_opmode_oneshot_wait)
         if errorCode1==vrep.simx_error_noerror and errorCode==vrep.simx_error_noerror :
             returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
             returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-            n=(positionObj1[0],positionObj1[1],positionTar[2])
+            n=(positionObj1[0],positionObj1[1],positionObj1[2]+0.25)
             vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
-            n=(positionObj1[0],positionObj1[1],positionObj1[2]+0.2)
             time.sleep(1)
-            vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
         else:
             print ('Error. Got no handle: ', errorCode, errorCode1)
     #end of moveTarget method
     
-    def grabObject(self, moveTarget, Object):
-        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
+    def moverLados(self, moveTarget, Object):
+        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget , vrep.simx_opmode_oneshot_wait)
         errorCode, obj = vrep.simxGetObjectHandle(self.clientID, Object, vrep.simx_opmode_oneshot_wait)
-        position2=[];
-        
+                                                  
         if errorCode1==vrep.simx_error_noerror and errorCode==vrep.simx_error_noerror :
             returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
             returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-            returnCode,distanciaTarObj1=vrep.simxGetObjectPosition(self.clientID,obj,handleJoint,vrep.simx_opmode_blocking)
-
-            for i in range(len(positionTar)):
-                if i == 2: 
-                    position2.append(positionTar[i]+distanciaTarObj1[i] + 0.10)  
-                else:
-                    position2.append(positionTar[i]+distanciaTarObj1[i])
-                    
-            np.array(position2)
-            n=(position2[0],position2[1],positionTar[2])
+            n=(positionObj1[0],positionObj1[1],positionObj1[2]+0.25)
+            vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
             
-            while round(positionTar[2],3)!=round((positionObj1[2]+0.05),3): 
-                n=(position2[0],position2[1],positionTar[2]-0.001)
-                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
-                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-
-            inputBuffer=bytearray()
-            res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
-                                                                                   'suctionPad',
-                                                                                   vrep.sim_scripttype_childscript,
-                                                                                   'sysCall_cleanup',
-                                                                                   [],
-                                                                                   [],
-                                                                                   [],
-                                                                                   inputBuffer,
-                                                                                   vrep.simx_opmode_blocking)
-          
-            while round(positionTar[2],2)!=round((self.home[2]),2): 
-                n=(position2[0],position2[1],positionTar[2]+0.005)
-                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
-                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-                
-        else:
-            print ('Error. Got no handle: ', errorCode)
-    #end of orientationTarget method
-    
-    def dropObject(self, moveTarget, Object):
-        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
-        errorCode, obj = vrep.simxGetObjectHandle(self.clientID, Object, vrep.simx_opmode_oneshot_wait)
-        position2=[];
-        
-        if errorCode1==vrep.simx_error_noerror and errorCode==vrep.simx_error_noerror :
+            time.sleep(1)
+            
             returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
             returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-            returnCode,distanciaTarObj1=vrep.simxGetObjectPosition(self.clientID,obj,handleJoint,vrep.simx_opmode_blocking)
 
-            for i in range(len(positionTar)):
-                if i == 2: 
-                    position2.append(positionTar[i])  
-                else:
-                    position2.append(positionTar[i]+distanciaTarObj1[i])
-                    
-            np.array(position2)
-            n=(position2[0],position2[1],position2[2])
+            n=(positionObj1[0],positionObj1[1],positionTar[2])
             
             while round(positionTar[2],3)>=round((positionObj1[2]+0.12),3): 
-                n=(position2[0],position2[1],positionTar[2]-0.001)
+                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.001)
                 vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
 
@@ -152,7 +103,43 @@ class Simulador(object):
                                                                                    vrep.simx_opmode_blocking)
           
             while round(positionTar[2],2)!=round((self.home[2]),2): 
-                n=(position2[0],position2[1],positionTar[2]+0.005)
+                n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
+                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
+                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+            
+            
+        else:
+            print ('Error. Got no handle: ', errorCode, errorCode1)
+    #end of moveLeft method
+    
+    def tomarObjeto(self, moveTarget, Object):
+        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
+        errorCode, obj = vrep.simxGetObjectHandle(self.clientID, Object, vrep.simx_opmode_oneshot_wait)
+
+        if errorCode1==vrep.simx_error_noerror and errorCode==vrep.simx_error_noerror :
+            returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+            returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
+            
+            n=(positionObj1[0],positionObj1[1],positionTar[2])
+            
+            while round(positionTar[2],3)!=round((positionObj1[2]+0.05),3): 
+                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.001)
+                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
+                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+
+            inputBuffer=bytearray()
+            res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+                                                                                   'suctionPad',
+                                                                                   vrep.sim_scripttype_childscript,
+                                                                                   'sysCall_cleanup',
+                                                                                   [],
+                                                                                   [],
+                                                                                   [],
+                                                                                   inputBuffer,
+                                                                                   vrep.simx_opmode_blocking)
+          
+            while round(positionTar[2],2)!=round((self.home[2]),2): 
+                n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
                 vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
                 
@@ -160,7 +147,43 @@ class Simulador(object):
             print ('Error. Got no handle: ', errorCode)
     #end of orientationTarget method
     
-    def returnHome(self):
+    def soltarObjeto(self, moveTarget, Object):
+        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
+        errorCode, obj = vrep.simxGetObjectHandle(self.clientID, Object, vrep.simx_opmode_oneshot_wait)
+        
+        if errorCode1==vrep.simx_error_noerror and errorCode==vrep.simx_error_noerror :
+            returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+            returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
+            returnCode,distanciaTarObj1=vrep.simxGetObjectPosition(self.clientID,obj,handleJoint,vrep.simx_opmode_blocking)
+
+            n=(positionObj1[0],positionObj1[1],positionTar[2])
+            
+            while round(positionTar[2],3)>=round((positionObj1[2]+0.12),3): 
+                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.001)
+                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
+                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+
+            inputBuffer=bytearray()
+            res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+                                                                                   'suctionPad',
+                                                                                   vrep.sim_scripttype_childscript,
+                                                                                   'sysCall_cleanup',
+                                                                                   [],
+                                                                                   [],
+                                                                                   [],
+                                                                                   inputBuffer,
+                                                                                   vrep.simx_opmode_blocking)
+          
+            while round(positionTar[2],2)!=round((self.home[2]),2): 
+                n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
+                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
+                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+                
+        else:
+            print ('Error. Got no handle: ', errorCode)
+    #end of orientationTarget method
+    
+    def volverCasa(self):
         inputBuffer=bytearray()
         res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
                                                                                    'suctionPad',
@@ -174,6 +197,7 @@ class Simulador(object):
         errorCode, handleJoint = vrep.simxGetObjectHandle(self.clientID, 'm_Sphere', vrep.simx_opmode_oneshot_wait)
         if errorCode==vrep.simx_error_noerror:
             vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,self.home,vrep.simx_opmode_oneshot)
+            time.sleep(1)
             
         else:
             print ('Error. Got no handle: ', errorCode)
@@ -192,7 +216,7 @@ class Simulador(object):
             print ('Error. Got no handle: ', errorCode)
         
         return imgRgb
-    #end of orientationTarget method
+    #end of KinectVisionRGB method
     
     def kinectVisionPATH(self):
         errorCode1,path=vrep.simxGetObjectHandle(self.clientID,'kinect_depth',vrep.simx_opmode_oneshot_wait)
@@ -208,6 +232,35 @@ class Simulador(object):
             print ('Error. Got no handle: ', errorCode1)
         
         return imgPath
-    #end of orientationTarget method
+    #end of KinectVisionPATH method
+    
+    def completado (self, Objeto): #True dejo en su lugar el objeto !!! SOLO MESA IZQ!!!
+        errorCode, handleJoint = vrep.simxGetObjectHandle(self.clientID, Objeto, vrep.simx_opmode_oneshot_wait)
+        errorCode, Mesa = vrep.simxGetObjectHandle(self.clientID, 'customizableTable_tableTop#1', vrep.simx_opmode_oneshot_wait)
+                                                   
+        returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+        returnCode,positionMesa=vrep.simxGetObjectPosition(self.clientID,Mesa,-1,vrep.simx_opmode_blocking)   
+                                        
+        if errorCode==vrep.simx_error_noerror:
+            if((positionMesa[0]-0.20)<=positionObj1[0] and (positionMesa[0]+0.20)>=positionObj1[0] and (positionMesa[1]-0.20)<=positionObj1[1] and (positionMesa[1]+0.20)>=positionObj1[1] ):
+                print (True)
+                return True
+        else:
+            print ('Error. Got no handle: ', errorCode)
+            return False
+
+    def seleccion(self, accion):
+        acciones = {'1': Simulador.tomarObjeto('m_Sphere','Cylinder'), 
+                    '2': Simulador.moverLados('m_Sphere','customizableTable_tableTop#1'), 
+                    '3': Simulador.moverLados('m_Sphere','customizableTable_tableTop#0'),
+                    '4': Simulador.volverCasa()}       
+         
+        try:
+            acciones[accion]
+            print (Simulador.completado('Cylinder'))
+        except:
+            print("Me cai en el switch")
+    #end of Reward method  
+    
     
     
