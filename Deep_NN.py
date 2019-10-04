@@ -91,23 +91,34 @@ if __name__ == "__main__":
     
     sim = simu()
 
+
     est=sim.kinectVisionRGB()
-    print("hola")
     agente = Deep_NN(estado=est)
     print(agente.decision(est))
     
 
 
+
+
     #agent.load("./save/cartpole-dqn.h5")
    
-    """
+    
     sim = simu()
     sim.moveTarget('m_Sphere', 'Cylinder')
     sim.grabObject('m_Sphere', 'Cylinder')
     sim.moveTarget('m_Sphere', 'customizableTable_tableTop#0')
     sim.dropObject('m_Sphere','customizableTable_tableTop#0')
     sim.returnHome()
-    """
+    sim.moveTarget('m_Sphere', 'Cuboid0')
+    sim.grabObject('m_Sphere', 'Cuboid0')
+    sim.moveTarget('m_Sphere', 'customizableTable_tableTop#1')
+    sim.dropObject('m_Sphere','customizableTable_tableTop#1')
+    sim.returnHome()
+    sim.moveTarget('m_Sphere', 'Cuboid')
+    sim.grabObject('m_Sphere', 'Cuboid')
+    sim.moveTarget('m_Sphere', 'customizableTable_tableTop#0')
+    sim.dropObject('m_Sphere','customizableTable_tableTop#0')
+    sim.returnHome()
     """
     sim.grabObject('m_Sphere', 'Cylinder')
 
