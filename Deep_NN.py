@@ -91,9 +91,11 @@ if __name__ == "__main__":
     
     sim = simu()
     
-    sim.seleccion(1)
+    sim.seleccion(0)
     sim.seleccion(2)
-    sim.completado()
+    sim.seleccion(3)
+    print (sim.completado('Cylinder'))
+    sim.restartScenario()
 
     #est=sim.kinectVisionRGB()
     #agente = Deep_NN(estado=est)

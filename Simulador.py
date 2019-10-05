@@ -69,7 +69,7 @@ class Simulador(object):
             print ('Error. Got no handle: ', errorCode, errorCode1)
     #end of moveTarget method
     
-    def moverLados(self, moveTarget, Object):
+    def moverLados(self,moveTarget,Object):
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget , vrep.simx_opmode_oneshot_wait)
         errorCode, obj = vrep.simxGetObjectHandle(self.clientID, Object, vrep.simx_opmode_oneshot_wait)
                                                   
@@ -87,7 +87,7 @@ class Simulador(object):
             n=(positionObj1[0],positionObj1[1],positionTar[2])
             
             while round(positionTar[2],3)>=round((positionObj1[2]+0.12),3): 
-                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.001)
+                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.002)
                 vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
 
@@ -121,9 +121,9 @@ class Simulador(object):
             returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             
             n=(positionObj1[0],positionObj1[1],positionTar[2])
-            
-            while round(positionTar[2],3)!=round((positionObj1[2]+0.05),3): 
-                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.001)
+
+            while round(positionTar[2],3)>=round((positionObj1[2]+0.05),3): 
+                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.002)
                 vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
 
@@ -138,7 +138,7 @@ class Simulador(object):
                                                                                    inputBuffer,
                                                                                    vrep.simx_opmode_blocking)
           
-            while round(positionTar[2],2)!=round((self.home[2]),2): 
+            while round(positionTar[2],2)<=round((self.home[2]),2): 
                 n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
                 vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
@@ -158,8 +158,8 @@ class Simulador(object):
 
             n=(positionObj1[0],positionObj1[1],positionTar[2])
             
-            while round(positionTar[2],3)>=round((positionObj1[2]+0.12),3): 
-                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.001)
+            while round(positionTar[2],3)!=round((positionObj1[2]+0.12),3): 
+                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.002)
                 vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
 
@@ -236,7 +236,7 @@ class Simulador(object):
     
     def completado (self, Objeto): #True dejo en su lugar el objeto !!! SOLO MESA IZQ!!!
         errorCode, handleJoint = vrep.simxGetObjectHandle(self.clientID, Objeto, vrep.simx_opmode_oneshot_wait)
-        errorCode, Mesa = vrep.simxGetObjectHandle(self.clientID, 'customizableTable_tableTop#1', vrep.simx_opmode_oneshot_wait)
+        errorCode, Mesa = vrep.simxGetObjectHandle(self.clientID, 'customizableTable_tableTop#0', vrep.simx_opmode_oneshot_wait)
                                                    
         returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
         returnCode,positionMesa=vrep.simxGetObjectPosition(self.clientID,Mesa,-1,vrep.simx_opmode_blocking)   
@@ -244,22 +244,26 @@ class Simulador(object):
         if errorCode==vrep.simx_error_noerror:
             if((positionMesa[0]-0.20)<=positionObj1[0] and (positionMesa[0]+0.20)>=positionObj1[0] and (positionMesa[1]-0.20)<=positionObj1[1] and (positionMesa[1]+0.20)>=positionObj1[1] ):
                 print (True)
-                return True
+                return True,1
+            
+            print (False)
+            return False,0
+
         else:
             print ('Error. Got no handle: ', errorCode)
-            return False
+            return False,0
 
     def seleccion(self, accion):
-        acciones = {'1': Simulador.tomarObjeto('m_Sphere','Cylinder'), 
-                    '2': Simulador.moverLados('m_Sphere','customizableTable_tableTop#1'), 
-                    '3': Simulador.moverLados('m_Sphere','customizableTable_tableTop#0'),
-                    '4': Simulador.volverCasa()}       
-         
-        try:
-            acciones[accion]
-            print (Simulador.completado('Cylinder'))
-        except:
-            print("Me cai en el switch")
+        if(accion==0):
+            self.tomarObjeto('m_Sphere','Cylinder')
+        if(accion==1):
+            self.moverLados('m_Sphere','customizableTable_tableTop#0')
+        if(accion==2):
+            self.moverLados('m_Sphere','customizableTable_tableTop#1')
+        if(accion==3):
+            self.volverCasa()
+        
+        
     #end of Reward method  
     
     
