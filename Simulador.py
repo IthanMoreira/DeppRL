@@ -243,11 +243,11 @@ class Simulador(object):
                                         
         if errorCode==vrep.simx_error_noerror:
             if((positionMesa[0]-0.20)<=positionObj1[0] and (positionMesa[0]+0.20)>=positionObj1[0] and (positionMesa[1]-0.20)<=positionObj1[1] and (positionMesa[1]+0.20)>=positionObj1[1] ):
-                print (True)
-                return True,1
+                
+                return self.kinectVisionRGB(),1,True
             
-            print (False)
-            return False,0
+            
+            return self.kinectVisionRGB(),0,False
 
         else:
             print ('Error. Got no handle: ', errorCode)
@@ -256,12 +256,20 @@ class Simulador(object):
     def seleccion(self, accion):
         if(accion==0):
             self.tomarObjeto('m_Sphere','Cylinder')
+            
+            return self.completado('Cylinder')
         if(accion==1):
             self.moverLados('m_Sphere','customizableTable_tableTop#0')
+            
+            return self.completado('Cylinder')
         if(accion==2):
             self.moverLados('m_Sphere','customizableTable_tableTop#1')
+            
+            return self.completado('Cylinder')
         if(accion==3):
             self.volverCasa()
+            
+            return self.completado('Cylinder')
         
         
     #end of Reward method  

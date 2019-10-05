@@ -21,13 +21,14 @@ K.clear_session()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1.0, iteraciones=100, cantidad_acciones=5, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1.0, iteraciones=100, cantidad_acciones=4, estado=np.array([])):
         
         self.aprendizaje = aprendizaje
         self.descuento = descuento # Descuennto de la recompensa futura
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
+        self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=2000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles
@@ -65,7 +66,7 @@ class Deep_NN:
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
-        valores = self.model.predict(estado)
+        valores = self.modelo.predict(estado)
         return np.argmax(valores[0])  # accion random o mayor
         
     def entrenar(self, batch_size):
@@ -74,31 +75,32 @@ class Deep_NN:
             target = recompensa
             if not logrado:
                 target = (recompensa + self.gamma *
-                          np.amax(self.model.predict(estado_siguiente)[0]))
-            target_f = self.model.predict(estado)
+                          np.amax(self.modelo.predict(estado_siguiente)[0]))
+            target_f = self.modelo.predict(estado)
             target_f[0][accion] = target
-            self.model.fit(estado, target_f, epochs=1, verbose=0)
+            self.modelo.fit(estado, target_f, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
     def cargar_modelo(self, name):
-        self.model.load_weights(name)
+        self.modelo.load_weights(name)
 
     def guardar_modelo(self, name):
-        self.model.save_weights(name)
+        self.modelo.save_weights(name)
         
 if __name__ == "__main__":
     
     sim = simu()
     
+    """
     sim.seleccion(0)
     sim.seleccion(2)
     sim.seleccion(3)
     print (sim.completado('Cylinder'))
     sim.restartScenario()
-
-    #est=sim.kinectVisionRGB()
-    #agente = Deep_NN(estado=est)
+"""
+    est=sim.kinectVisionRGB()
+    agente = Deep_NN(estado=est)
     #print(agente.decision(est))
     
 
@@ -116,32 +118,39 @@ if __name__ == "__main__":
     sim.grabObject('m_Sphere', 'Cuboid')
     sim.dropObject('m_Sphere','customizableTable_tableTop#')
     """
-    """
+    
+    
     done = False
-    batch_size = 32
+    batch_size = 3
     for e in range(agente.episodios):
-        state = env.reset()# reseteo el estaado y le entrego la imagen nuevamente
+        state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
            
             action = agente.decision(state)
-            next_state, reward, done, _ = env.step(action) # segun la accion retorna desde el entorno todo eso
-            reward = reward if not done else -1
-            next_state = np.reshape(next_state, [1, state_size])
-            agent.remember(state, action, reward, next_state, done)
+            print(action)
+            next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+            agente.experiencia(state, action, reward, next_state, done)                        
+            #reward = reward if not done else -1
             state = next_state
             if done:
                 print("episode: {}/{}, score: {}, e: {:.2}"
-                      .format(e, self.episodios, time, agent.epsilon))
+                      .format(e, agente.episodios, time, agente.epsilon))
                 break
-            if len(agent.memory) > batch_size:
-                agent.replay(batch_size)
+              
+        
+            if len(agente.memory) > batch_size:
+                print("asdasdasdasdasdasaqui")
+                agente.entrenar(batch_size)
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
+        
+"""
 cnn.fit(
     entrenamiento_generador,
     steps_per_epoch=pasos,
     epochs=epocas,
     validation_data=validacion_generador,
     validation_steps=validation_steps)
+
 """
