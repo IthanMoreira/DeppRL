@@ -21,7 +21,7 @@ K.clear_session()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1.0, iteraciones=100, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=4, estado=np.array([])):
         
         self.aprendizaje = aprendizaje
         self.descuento = descuento # Descuennto de la recompensa futura
@@ -31,15 +31,16 @@ class Deep_NN:
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=2000)
-        self.cantidad_acciones = cantidad_acciones # numero de acciones posibles
-        self.modelo=self.contruModelo
+        self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (3, 3)
         self.tamano_filtro2 = (2, 2)
-        self.longitud, self.altura = 150, 150
+        self.longitud=200
+        self.altura = 200
         self.filtrosConv1 = 32
         self.filtrosConv2 = 64
         self.tamano_pool = (2, 2)
         self.episodios=100
+        self.modelo=self.contruModelo()
     
     
     
@@ -59,7 +60,7 @@ class Deep_NN:
         cnn.compile(loss='categorical_crossentropy',
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
-        
+        return cnn
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
     
@@ -76,9 +77,10 @@ class Deep_NN:
             if not logrado:
                 target = (recompensa + self.gamma *
                           np.amax(self.modelo.predict(estado_siguiente)[0]))
-            target_f = self.modelo.predict(estado)
-            target_f[0][accion] = target
+            target_f = self.modelo.predict(estado)           
+            target_f[0][accion] = target            
             self.modelo.fit(estado, target_f, epochs=1, verbose=0)
+            
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -92,56 +94,33 @@ if __name__ == "__main__":
     
     sim = simu()
     
-    """
-    sim.seleccion(0)
-    sim.seleccion(2)
-    sim.seleccion(3)
-    print (sim.completado('Cylinder'))
-    sim.restartScenario()
-"""
     est=sim.kinectVisionRGB()
-    agente = Deep_NN(estado=est)
-    #print(agente.decision(est))
-    
 
-
-
-
-    #agent.load("./save/cartpole-dqn.h5")
-   
-    """
-    sim.grabObject('m_Sphere', 'Cylinder')
-
-    sim.dropObject('m_Sphere','customizableTable_tableTop')
-
-    sim.moveTarget('m_Sphere', 'Cuboid')
-    sim.grabObject('m_Sphere', 'Cuboid')
-    sim.dropObject('m_Sphere','customizableTable_tableTop#')
-    """
     
     
+    
+    agente = Deep_NN(estado=est) 
     done = False
-    batch_size = 3
+    batch_size = 32
     for e in range(agente.episodios):
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
-           
-            action = agente.decision(state)
-            print(action)
+            print(time)
+            action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done)                        
             #reward = reward if not done else -1
             state = next_state
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2}"
-                      .format(e, agente.episodios, time, agente.epsilon))
+                print("episode: {}/{}, score: {}, e: {:.2}")
+#                      .format(e, agente.episodios, time, agente.epsilon))
                 break
               
         
-            if len(agente.memory) > batch_size:
-                print("asdasdasdasdasdasaqui")
+            if len(agente.memory) > batch_size:                
                 agente.entrenar(batch_size)
+                
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
         

@@ -210,7 +210,10 @@ class Simulador(object):
             res,resolution,imegenRgb=vrep.simxGetVisionSensorImage(self.clientID,rgb,0,vrep.simx_opmode_buffer)
             
             imgRgb = np.array(imegenRgb,dtype=np.uint8)
-            imgRgb.resize([resolution[1],resolution[0],3])
+            
+            imgRgb.resize([200,200,3])
+            
+            imgRgb= np.expand_dims(imgRgb, axis=0)
         
         else:
             print ('Error. Got no handle: ', errorCode)
