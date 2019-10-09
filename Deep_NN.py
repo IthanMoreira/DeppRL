@@ -42,8 +42,6 @@ class Deep_NN:
         self.episodios=100
         self.modelo=self.contruModelo()
     
-    
-    
     def contruModelo (self):
         cnn = Sequential()
         cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="same", input_shape=(self.longitud, self.altura, 3), activation='relu'))
@@ -69,7 +67,7 @@ class Deep_NN:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
         return np.argmax(valores[0])  # accion random o mayor
-        
+       
     def entrenar(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)#con lo guardado se entrena la red con experiencias random
         for estado, accion, recompensa, estado_siguiente, logrado in minibatch:
@@ -93,7 +91,17 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
+    sim.seleccion(0)    #tomar obj
+    sim.seleccion(1)    #mov Izq
+    sim.seleccion(2)    #mov Der
+    sim.seleccion(3)    #Soltar obj
+    sim.seleccion(4)    #Volver casa
+    sim.seleccion(5)    #Reiniciar escena
+    sim.quedaAlgo()     #Indica si queda algo en mesa True o Flase 
+
     
+    
+    """
     est=sim.kinectVisionRGB()
 
     
@@ -123,7 +131,7 @@ if __name__ == "__main__":
                 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
-        
+"""
 """
 cnn.fit(
     entrenamiento_generador,
