@@ -66,6 +66,7 @@ class Deep_NN:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
+        print(valores)
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size):
