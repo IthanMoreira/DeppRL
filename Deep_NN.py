@@ -66,7 +66,6 @@ class Deep_NN:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
-        print(valores)
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size):
@@ -92,16 +91,7 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
-    """
-   
-    sim.seleccion(0)    #tomar obj
-    sim.seleccion(1)    #mov Izq
-    sim.seleccion(2)    #mov Der
-    sim.seleccion(3)    #Soltar obj
-    sim.seleccion(4)    #Volver casa
-    sim.seleccion(5)    #Reiniciar escena
-    """
-    
+
     
     est=sim.kinectVisionRGB()
 
@@ -115,15 +105,16 @@ if __name__ == "__main__":
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
-            print(time)
+            print("lol",time)
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done)                        
             #reward = reward if not done else -1
             state = next_state
+            print(done)
             if done:
-                print("episode: {}/{}, score: {}, e: {:.2}")
-#                      .format(e, agente.episodios, time, agente.epsilon))
+                print("episode: ",e," score: ",reward," e : ",agente.epsilon)
+#                      
                 break
               
         

@@ -163,9 +163,9 @@ class Simulador(object):
         for obj in self.objetos:
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] ):
-                    return True
+                    return False
         
-        return False
+        return True
     
     def tomarObjeto(self, moveTarget): 
         
