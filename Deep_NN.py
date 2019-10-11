@@ -98,10 +98,7 @@ if __name__ == "__main__":
     sim.seleccion(3)    #Soltar obj
     sim.seleccion(4)    #Volver casa
     sim.seleccion(5)    #Reiniciar escena
-    sim.quedaAlgo()     #Indica si queda algo en mesa True o Flase 
 
-    
-    
     """
     est=sim.kinectVisionRGB()
 

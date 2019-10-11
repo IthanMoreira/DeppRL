@@ -317,19 +317,23 @@ class Simulador(object):
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
                                         
         if errorCode==vrep.simx_error_noerror:
-            if((positionMesaIzq[0]-0.20)<=positionObj1[0] and (positionMesaIzq[0]+0.20)>=positionObj1[0] and (positionMesaIzq[1]-0.20)<=positionObj1[1] and (positionMesaIzq[1]+0.20)>=positionObj1[1] ):
-                vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
-                self.cont = self.cont+1
-                self.objTomado=0
-                return self.kinectVisionRGB(),1
-            
+            if((positionMesaIzq[0]-0.20)<=positionObj1[0] and (positionMesaIzq[0]+0.20)>=positionObj1[0] and (positionMesaIzq[1]-0.20)<=positionObj1[1] and (positionMesaIzq[1]+0.20)>=positionObj1[1]):
+                
+                if (self.obj3Id==self.objTomado or self.obj2Id==self.objTomado or self.obj6Id==self.objTomado):
+                    
+                    vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+                    self.cont = self.cont+1
+                    self.objTomado=0
+                    return self.kinectVisionRGB(),1,self.quedaAlgo()
+                
             if((positionMesaDer[0]-0.20)<=positionObj1[0] and (positionMesaDer[0]+0.20)>=positionObj1[0] and (positionMesaDer[1]-0.20)<=positionObj1[1] and (positionMesaDer[1]+0.20)>=positionObj1[1] ):
-                vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
-                self.cont = self.cont+1
-                self.objTomado=0
-                return self.kinectVisionRGB(),1
+                if (self.obj1Id==self.objTomado or self.obj4Id==self.objTomado or self.obj5Id==self.objTomado):
+                    vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+                    self.cont = self.cont+1
+                    self.objTomado=0
+                    return self.kinectVisionRGB(),1,self.quedaAlgo()
             
-            return self.kinectVisionRGB(),0
+            return self.kinectVisionRGB(),0,self.quedaAlgo()
 
         else:
             print ('Error. Completado', errorCode)
@@ -338,15 +342,16 @@ class Simulador(object):
     def seleccion(self, accion):
         if(accion==0):
             self.tomarObjeto('m_Sphere')           
-
+            self.completado()
+            
         
         if(accion==1):
             self.moverLados('m_Sphere','customizableTable_tableTop#0')  
-
+            self.completado()
         
         if(accion==2):
             self.moverLados('m_Sphere','customizableTable_tableTop#1')  
-
+            self.completado()
         
         if(accion==3):
             self.soltarObjeto('m_Sphere')
@@ -354,9 +359,11 @@ class Simulador(object):
             
         if(accion==4):
             self.volverCasa()
+            self.completado() 
             
         if(accion==5):
             self.restartScenario()
+            self.completado()
 
         
     #end of Reward method
