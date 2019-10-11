@@ -99,7 +99,7 @@ if __name__ == "__main__":
     
     agente = Deep_NN(estado=est) 
     done = False
-    batch_size = 32
+    batch_size = 1000
     for e in range(agente.episodios):
         sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -118,8 +118,9 @@ if __name__ == "__main__":
                 break
               
         
-            if len(agente.memory) > batch_size:                
-                agente.entrenar(batch_size)
+        if len(agente.memory) > batch_size: 
+            print("entrenando")
+            agente.entrenar(batch_size)
                 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
