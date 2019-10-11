@@ -223,10 +223,7 @@ class Simulador(object):
                     vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                     returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
                     
-            else:
-                print ('Error. tomarObjeto ', errorCode1)
-        else:
-            print ('Objeto no esta en la mesa central') 
+        
     #end of orientationTarget method
     
     def soltarObjeto(self, moveTarget):
@@ -262,10 +259,7 @@ class Simulador(object):
                     
                 self.mesa=0
                 
-            else:
-                print ('Error. soltarObjeto ', errorCode1)
-        else:
-            print ('no hay mesa')
+            
     #end of orientationTarget method
     
     def volverCasa(self):
