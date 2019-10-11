@@ -14,7 +14,6 @@ class Simulador(object):
  
     def __init__(self):
         self.clientID,self.home= self.connectRobot()
-        self.home[2]=(self.home[2]-0.2)
         self.posObj1,self.obj1Id=self.obtenerPos('Cuboid0')
         self.posObj2,self.obj2Id=self.obtenerPos('Cuboid1')
         self.posObj3,self.obj3Id=self.obtenerPos('Cylinder') 
@@ -26,9 +25,9 @@ class Simulador(object):
         self.objetos = [self.obj1Id,self.obj2Id ,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
         self.posicionIni=[ self.posObj1, self.posObj2, self.posObj3, self.posObj4, self.posObj5, self.posObj6]
         returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
-        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj3Id,-1,vrep.simx_opmode_blocking)
-        self.posEnMesa()
         self.cont=0
+        self.porTomar=[]
+        self.posEnMesa()
         
         if self.clientID != -1:
             self.actionNumber = 1
@@ -43,6 +42,7 @@ class Simulador(object):
         return posObj,idObj
     
     def posEnMesa(self):
+        self.porTomar=self.objetos[:]
         errorCode1, mesa = vrep.simxGetObjectHandle(self.clientID,'customizableTable_tableTop', vrep.simx_opmode_oneshot_wait)
         returnCode,posMesa=vrep.simxGetObjectPosition(self.clientID,mesa,-1,vrep.simx_opmode_blocking)
         
@@ -76,8 +76,11 @@ class Simulador(object):
             errorCode1, handleJoint = vrep.simxGetObjectHandle(clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
             errorCode1, objeto = vrep.simxGetObjectHandle(clientID,'Cylinder' , vrep.simx_opmode_oneshot_wait)
             returnCode,home=vrep.simxGetObjectPosition(clientID,handleJoint,-1,vrep.simx_opmode_blocking)#deje estatico la primera posicion de target
+            home[2]=home[2]-0.2
+            vrep.simxSetObjectPosition(clientID,handleJoint,-1,home,vrep.simx_opmode_oneshot)
             returnCode,obj=vrep.simxGetObjectPosition(clientID,objeto,-1,vrep.simx_opmode_blocking)
             vrep.simxSetObjectOrientation(clientID,handleJoint,-1,(0,math.pi,0),vrep.simx_opmode_oneshot)
+            
             errorCode,rgb=vrep.simxGetObjectHandle(clientID,'kinect_rgb',vrep.simx_opmode_oneshot_wait)
             res,resolution,imegenRgb=vrep.simxGetVisionSensorImage(clientID,rgb,0,vrep.simx_opmode_streaming)
             time.sleep(1)
@@ -111,13 +114,9 @@ class Simulador(object):
         
         for obj in self.objetos:
                 aux=random.choice(aux1)
-                if obj==self.obj3Id or obj==self.obj4Id:
-                    vrep.simxSetObjectOrientation(self.clientID,obj,-1,self.oriObj3,vrep.simx_opmode_oneshot)
-                    vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
-                    aux1.remove(aux)
-                else:    
-                    vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
-                    aux1.remove(aux)
+                vrep.simxSetObjectOrientation(self.clientID,obj,-1,self.oriObj3,vrep.simx_opmode_oneshot)
+                vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
+                aux1.remove(aux)
                 
         time.sleep(1)
         self.cont=0
@@ -179,14 +178,13 @@ class Simulador(object):
         
         for obj in self.objetos:
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-            if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] ):
+            if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] or self.objTomado!=0 ):
                     return False
         
         return True
     
     def tomarObjeto(self, moveTarget): 
-        
-        obj=random.choice(self.objetos)
+        obj=random.choice(self.porTomar)
         if self.enMesa(obj):
             self.objTomado=obj
             errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
@@ -222,7 +220,7 @@ class Simulador(object):
                     n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
                     vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                     returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-                    
+                
         
     #end of orientationTarget method
     
@@ -332,12 +330,15 @@ class Simulador(object):
                     #print ('clasifico bn')
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                     self.cont = self.cont+1
+                    self.porTomar.remove(self.objTomado)
                     self.objTomado=0
+                    
                     return self.kinectVisionRGB(),1,self.quedaAlgo()
                 else:
                     #print ('Se equivoco al clasificar')
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                     self.cont = self.cont+1
+                    self.porTomar.remove(self.objTomado)
                     self.objTomado=0
             else:    
                 #print ('no entre mesa izq')    
@@ -347,13 +348,17 @@ class Simulador(object):
                         #print ('clasifico bn')
                         vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                         self.cont = self.cont+1
+                        self.porTomar.remove(self.objTomado)
                         self.objTomado=0
+
                         return self.kinectVisionRGB(),1,self.quedaAlgo()
                     else:
                         #print ('Se equivoco al clasificar')
                         vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                         self.cont = self.cont+1
+                        self.porTomar.remove(self.objTomado)
                         self.objTomado=0
+
                     
                 #print ('no entre mesa Der') 
                 
