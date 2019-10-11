@@ -290,7 +290,7 @@ class Simulador(object):
             
             imgRgb = np.array(imegenRgb,dtype=np.uint8)
             
-            imgRgb.resize([200,200,3])
+            imgRgb.resize([200,150,3])
             
             imgRgb= np.expand_dims(imgRgb, axis=0)
         
@@ -384,9 +384,10 @@ class Simulador(object):
             self.volverCasa()
             return self.completado() 
             
-        if(accion==5):
-            self.restartScenario()
-            return self.completado()
+        #if(accion==5):
+        #    self.restartScenario()
+        #    z,r,m =self.completado()
+        #    return z,-1,m
 
         
     #end of Reward method
