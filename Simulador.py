@@ -290,7 +290,7 @@ class Simulador(object):
             
             imgRgb = np.array(imegenRgb,dtype=np.uint8)
             
-            imgRgb.resize([360,270,3])
+            imgRgb.resize([200,150,3])
             
             imgRgb= np.expand_dims(imgRgb, axis=0)
         

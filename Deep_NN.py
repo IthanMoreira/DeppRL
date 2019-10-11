@@ -34,8 +34,8 @@ class Deep_NN:
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (3, 3)
         self.tamano_filtro2 = (2, 2)
-        self.longitud=360
-        self.altura = 270
+        self.longitud=200
+        self.altura = 150
         self.filtrosConv1 = 32
         self.filtrosConv2 = 64
         self.tamano_pool = (2, 2)
@@ -110,9 +110,9 @@ if __name__ == "__main__":
     
     agente = Deep_NN(estado=est) 
     done = False
-    batch_size = 500
+    batch_size = 36
     for e in range(agente.episodios):
-        sim.restartScenario()
+        
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
@@ -132,6 +132,7 @@ if __name__ == "__main__":
         if len(agente.memory) > batch_size: 
             print("entrenando")
             agente.entrenar(batch_size)
+        sim.restartScenario()
                 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
