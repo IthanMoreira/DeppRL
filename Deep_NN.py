@@ -91,6 +91,7 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
+    sim.restartScenario()
 
     
     est=sim.kinectVisionRGB()
