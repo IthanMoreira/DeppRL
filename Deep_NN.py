@@ -87,7 +87,8 @@ class Deep_NN:
 
     def guardar_modelo(self, name):
         self.modelo.save_weights(name)
-        
+    def actualizar (self):
+        self.modelo.set_weights(self.modelo.get_weights())
 if __name__ == "__main__":
     
     sim = simu()
@@ -115,7 +116,7 @@ if __name__ == "__main__":
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
-            
+            print(time)
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done)                        
@@ -123,6 +124,7 @@ if __name__ == "__main__":
             state = next_state
             
             if done:
+                agente.actualizar()
                 print("episode: ",e," score: ",reward," e : ",agente.epsilon)
 #                      
                 break
