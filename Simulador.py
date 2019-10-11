@@ -18,7 +18,9 @@ class Simulador(object):
         self.posObj1,self.obj1Id=self.obtenerPos('Cuboid0')
         self.posObj2,self.obj2Id=self.obtenerPos('Cuboid1')
         self.posObj3,self.obj3Id=self.obtenerPos('Cylinder')
+        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj3Id,-1,vrep.simx_opmode_blocking)
         self.posObj4,self.obj4Id=self.obtenerPos('Cylinder0')
+        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
         self.posObj5,self.obj5Id=self.obtenerPos('Disc0')
         self.posObj6,self.obj6Id=self.obtenerPos('Disc1')
         self.objTomado=0
@@ -94,11 +96,26 @@ class Simulador(object):
         
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
         vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,self.home,vrep.simx_opmode_oneshot)
+        inputBuffer=bytearray()
+        res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+                                                                                       'suctionPad',
+                                                                                       vrep.sim_scripttype_childscript,
+                                                                                       'sysCall_cleanup',
+                                                                                       [],
+                                                                                       [],
+                                                                                       [],
+                                                                                       inputBuffer,
+                                                                                       vrep.simx_opmode_blocking)
         
         aux1=self.posicionIni[:]
         
         for obj in self.objetos:
                 aux=random.choice(aux1)
+                if obj==self.obj3Id or obj==self.obj4Id:
+                    vrep.simxSetObjectOrientation(self.clientID,obj,-1,self.oriObj3,vrep.simx_opmode_oneshot)
+                    vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
+                    aux1.remove(aux)
+                    
                 vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
                 aux1.remove(aux)
                 
@@ -315,7 +332,7 @@ class Simulador(object):
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
                                         
         if errorCode==vrep.simx_error_noerror:
-            if((positionMesaIzq[0]-0.20)<=positionObj1[0] and (positionMesaIzq[0]+0.20)>=positionObj1[0] and (positionMesaIzq[1]-0.20)<=positionObj1[1] and (positionMesaIzq[1]+0.20)>=positionObj1[1]):
+            if((positionMesaIzq[0]-0.10)<=positionObj1[0] and (positionMesaIzq[0]+0.10)>=positionObj1[0] and (positionMesaIzq[1]-0.10)<=positionObj1[1] and (positionMesaIzq[1]+0.10)>=positionObj1[1]):
                 
                 if (self.obj3Id==self.objTomado or self.obj2Id==self.objTomado or self.obj6Id==self.objTomado):
                     
@@ -324,7 +341,7 @@ class Simulador(object):
                     self.objTomado=0
                     return self.kinectVisionRGB(),1,self.quedaAlgo()
                 
-            if((positionMesaDer[0]-0.20)<=positionObj1[0] and (positionMesaDer[0]+0.20)>=positionObj1[0] and (positionMesaDer[1]-0.20)<=positionObj1[1] and (positionMesaDer[1]+0.20)>=positionObj1[1] ):
+            if((positionMesaDer[0]-0.10)<=positionObj1[0] and (positionMesaDer[0]+0.10)>=positionObj1[0] and (positionMesaDer[1]-0.10)<=positionObj1[1] and (positionMesaDer[1]+0.10)>=positionObj1[1] ):
                 if (self.obj1Id==self.objTomado or self.obj4Id==self.objTomado or self.obj5Id==self.objTomado):
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                     self.cont = self.cont+1
