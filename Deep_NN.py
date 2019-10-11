@@ -91,8 +91,7 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
-
-    
+    sim.restartScenario()    
     est=sim.kinectVisionRGB()
 
     
@@ -102,6 +101,7 @@ if __name__ == "__main__":
     done = False
     batch_size = 32
     for e in range(agente.episodios):
+        sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
