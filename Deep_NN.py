@@ -21,7 +21,7 @@ K.clear_session()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=6, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=5, estado=np.array([])):
         
         self.aprendizaje = aprendizaje
         self.descuento = descuento # Descuennto de la recompensa futura
@@ -34,8 +34,8 @@ class Deep_NN:
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (3, 3)
         self.tamano_filtro2 = (2, 2)
-        self.longitud=200
-        self.altura = 200
+        self.longitud=360
+        self.altura = 270
         self.filtrosConv1 = 32
         self.filtrosConv2 = 64
         self.tamano_pool = (2, 2)
@@ -53,9 +53,9 @@ class Deep_NN:
         cnn.add(Flatten())
         cnn.add(Dense(256, activation='relu'))
         cnn.add(Dropout(0.5))
-        cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
+        cnn.add(Dense(self.cantidad_acciones))
 
-        cnn.compile(loss='categorical_crossentropy',
+        cnn.compile(loss='mse',
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
         return cnn
@@ -110,13 +110,13 @@ if __name__ == "__main__":
     
     agente = Deep_NN(estado=est) 
     done = False
-    batch_size = 100
+    batch_size = 500
     for e in range(agente.episodios):
         sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
-            print(time)
+            
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done)                        
@@ -125,14 +125,13 @@ if __name__ == "__main__":
             
             if done:
                 agente.actualizar()
-                print("episode: ",e," score: ",reward," e : ",agente.epsilon)
-#                      
+                print("episode: ",e," score: ",reward," e : ",agente.epsilon)#                      
                 break
               
         
-            if len(agente.memory) > batch_size: 
-                print("entrenando")
-                agente.entrenar(batch_size)
+        if len(agente.memory) > batch_size: 
+            print("entrenando")
+            agente.entrenar(batch_size)
                 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
