@@ -21,7 +21,7 @@ K.clear_session()
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=6, estado=np.array([])):
         
         self.aprendizaje = aprendizaje
         self.descuento = descuento # Descuennto de la recompensa futura
