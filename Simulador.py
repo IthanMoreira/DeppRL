@@ -239,7 +239,7 @@ class Simulador(object):
     
                 n=(positionObj1[0],positionObj1[1],positionTar[2])
                 
-                while round(positionTar[2],3)!=round((positionObj1[2]+0.12),3): 
+                while round(positionTar[2],3)>=round((positionObj1[2]+0.12),3): 
                     n=(positionObj1[0],positionObj1[1],positionTar[2]-0.002)
                     vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                     returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
@@ -255,7 +255,7 @@ class Simulador(object):
                                                                                        inputBuffer,
                                                                                        vrep.simx_opmode_blocking)
               
-                while round(positionTar[2],2)!=round((self.home[2]),2): 
+                while round(positionTar[2],2)<=round((self.home[2]),2): 
                     n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
                     vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                     returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
