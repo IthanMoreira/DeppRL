@@ -105,13 +105,13 @@ if __name__ == "__main__":
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
         for time in range(500):
-            print("lol",time)
+            
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done)                        
             #reward = reward if not done else -1
             state = next_state
-            print(done)
+            
             if done:
                 print("episode: ",e," score: ",reward," e : ",agente.epsilon)
 #                      
