@@ -94,6 +94,16 @@ class Simulador(object):
         
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
         vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,self.home,vrep.simx_opmode_oneshot)
+        inputBuffer=bytearray()
+        res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+                                                                                       'suctionPad',
+                                                                                       vrep.sim_scripttype_childscript,
+                                                                                       'sysCall_cleanup',
+                                                                                       [],
+                                                                                       [],
+                                                                                       [],
+                                                                                       inputBuffer,
+                                                                                       vrep.simx_opmode_blocking)
         
         aux1=self.posicionIni[:]
         print (self.posicionIni)
