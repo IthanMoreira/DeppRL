@@ -17,16 +17,16 @@ class Simulador(object):
         self.home[2]=(self.home[2]-0.2)
         self.posObj1,self.obj1Id=self.obtenerPos('Cuboid0')
         self.posObj2,self.obj2Id=self.obtenerPos('Cuboid1')
-        self.posObj3,self.obj3Id=self.obtenerPos('Cylinder')
-        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj3Id,-1,vrep.simx_opmode_blocking)
+        self.posObj3,self.obj3Id=self.obtenerPos('Cylinder') 
         self.posObj4,self.obj4Id=self.obtenerPos('Cylinder0')
-        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
         self.posObj5,self.obj5Id=self.obtenerPos('Disc0')
         self.posObj6,self.obj6Id=self.obtenerPos('Disc1')
         self.objTomado=0
         self.mesa=0
         self.objetos = [self.obj1Id,self.obj2Id ,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
         self.posicionIni=[ self.posObj1, self.posObj2, self.posObj3, self.posObj4, self.posObj5, self.posObj6]
+        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
+        returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj3Id,-1,vrep.simx_opmode_blocking)
         self.posEnMesa()
         self.cont=0
         
@@ -93,10 +93,7 @@ class Simulador(object):
     #end of disconnectSimulator method
     
     def restartScenario(self):
-        
-        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
-        vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,self.home,vrep.simx_opmode_oneshot)
-        inputBuffer=bytearray()
+        inputBuffer=bytearray()    
         res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
                                                                                        'suctionPad',
                                                                                        vrep.sim_scripttype_childscript,
@@ -107,6 +104,9 @@ class Simulador(object):
                                                                                        inputBuffer,
                                                                                        vrep.simx_opmode_blocking)
         
+        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
+        vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,self.home,vrep.simx_opmode_oneshot)
+        
         aux1=self.posicionIni[:]
         
         for obj in self.objetos:
@@ -115,9 +115,9 @@ class Simulador(object):
                     vrep.simxSetObjectOrientation(self.clientID,obj,-1,self.oriObj3,vrep.simx_opmode_oneshot)
                     vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
                     aux1.remove(aux)
-                    
-                vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
-                aux1.remove(aux)
+                else:    
+                    vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
+                    aux1.remove(aux)
                 
         time.sleep(1)
         
