@@ -106,8 +106,7 @@ class Simulador(object):
                                                                                        vrep.simx_opmode_blocking)
         
         aux1=self.posicionIni[:]
-        print (self.posicionIni)
-        print (aux1)
+        
         for obj in self.objetos:
                 aux=random.choice(aux1)
                 vrep.simxSetObjectPosition(self.clientID,obj,-1,(aux[0],aux[1],aux[2]+0.06),vrep.simx_opmode_oneshot)
@@ -116,8 +115,7 @@ class Simulador(object):
         time.sleep(1)
         
         self.posEnMesa()
-        print (self.posicionIni)
-        print (aux1)
+        
         
     #end of disconnectRobot method
     
@@ -352,28 +350,29 @@ class Simulador(object):
     def seleccion(self, accion):
         if(accion==0):
             self.tomarObjeto('m_Sphere')           
-            self.completado()
+            
+            return self.completado()
             
         
         if(accion==1):
             self.moverLados('m_Sphere','customizableTable_tableTop#0')  
-            self.completado()
+            return self.completado()
         
         if(accion==2):
             self.moverLados('m_Sphere','customizableTable_tableTop#1')  
-            self.completado()
+            return self.completado()
         
         if(accion==3):
             self.soltarObjeto('m_Sphere')
-            self.completado()
+            return self.completado()
             
         if(accion==4):
             self.volverCasa()
-            self.completado() 
+            return self.completado() 
             
         if(accion==5):
             self.restartScenario()
-            self.completado()
+            return self.completado()
 
         
     #end of Reward method

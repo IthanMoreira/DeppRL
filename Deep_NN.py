@@ -92,14 +92,17 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
+    """
+   
     sim.seleccion(0)    #tomar obj
     sim.seleccion(1)    #mov Izq
     sim.seleccion(2)    #mov Der
     sim.seleccion(3)    #Soltar obj
     sim.seleccion(4)    #Volver casa
     sim.seleccion(5)    #Reiniciar escena
-
     """
+    
+    
     est=sim.kinectVisionRGB()
 
     
@@ -129,7 +132,7 @@ if __name__ == "__main__":
                 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
-"""
+
 """
 cnn.fit(
     entrenamiento_generador,
