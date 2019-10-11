@@ -332,22 +332,37 @@ class Simulador(object):
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
                                         
         if errorCode==vrep.simx_error_noerror:
-            if((positionMesaIzq[0]-0.10)<=positionObj1[0] and (positionMesaIzq[0]+0.10)>=positionObj1[0] and (positionMesaIzq[1]-0.10)<=positionObj1[1] and (positionMesaIzq[1]+0.10)>=positionObj1[1]):
-                
-                if (self.obj3Id==self.objTomado or self.obj2Id==self.objTomado or self.obj6Id==self.objTomado):
+            if((positionMesaIzq[0]-0.10)<=positionObj1[0] and (positionMesaIzq[0]+0.10)>=positionObj1[0] and (positionMesaIzq[1]-0.10)<=positionObj1[1] and (positionMesaIzq[1]+0.10)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   
+                print ('entre mesa izq')
+                if (self.obj3Id==self.objTomado or self.obj2Id==self.objTomado or self.obj6Id==self.objTomado):               
+                    print ('clasifico bn')
+                    vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+                    self.cont = self.cont+1
+                    self.objTomado=0
+                    return self.kinectVisionRGB(),1,self.quedaAlgo()
+                else:
+                    print ('Se equivoco al clasificar')
+                    vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+                    self.cont = self.cont+1
+                    self.objTomado=0
+            else:    
+                print ('no entre mesa izq')    
+                if((positionMesaDer[0]-0.10)<=positionObj1[0] and (positionMesaDer[0]+0.10)>=positionObj1[0] and (positionMesaDer[1]-0.10)<=positionObj1[1] and (positionMesaDer[1]+0.10)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
+                    print ('entre mesa Der')
+                    if (self.obj1Id==self.objTomado or self.obj4Id==self.objTomado or self.obj5Id==self.objTomado):
+                        print ('clasifico bn')
+                        vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+                        self.cont = self.cont+1
+                        self.objTomado=0
+                        return self.kinectVisionRGB(),1,self.quedaAlgo()
+                    else:
+                        print ('Se equivoco al clasificar')
+                        vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+                        self.cont = self.cont+1
+                        self.objTomado=0
                     
-                    vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
-                    self.cont = self.cont+1
-                    self.objTomado=0
-                    return self.kinectVisionRGB(),1,self.quedaAlgo()
+                print ('no entre mesa Der') 
                 
-            if((positionMesaDer[0]-0.10)<=positionObj1[0] and (positionMesaDer[0]+0.10)>=positionObj1[0] and (positionMesaDer[1]-0.10)<=positionObj1[1] and (positionMesaDer[1]+0.10)>=positionObj1[1] ):
-                if (self.obj1Id==self.objTomado or self.obj4Id==self.objTomado or self.obj5Id==self.objTomado):
-                    vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
-                    self.cont = self.cont+1
-                    self.objTomado=0
-                    return self.kinectVisionRGB(),1,self.quedaAlgo()
-            
             return self.kinectVisionRGB(),0,self.quedaAlgo()
 
         else:
@@ -357,10 +372,8 @@ class Simulador(object):
     def seleccion(self, accion):
         if(accion==0):
             self.tomarObjeto('m_Sphere')           
-            
             return self.completado()
-            
-        
+                
         if(accion==1):
             self.moverLados('m_Sphere','customizableTable_tableTop#0')  
             return self.completado()
@@ -371,6 +384,7 @@ class Simulador(object):
         
         if(accion==3):
             self.soltarObjeto('m_Sphere')
+            time.sleep(0.5)
             return self.completado()
             
         if(accion==4):
