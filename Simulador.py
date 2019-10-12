@@ -175,6 +175,7 @@ class Simulador(object):
             vrep.simxSetObjectPosition(self.clientID,obj,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
             self.cont = self.cont+1
             self.porTomar.remove(obj)
+
             
             
     def quedaAlgo(self):
