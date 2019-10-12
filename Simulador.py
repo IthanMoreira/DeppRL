@@ -172,9 +172,9 @@ class Simulador(object):
         if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] ):
                 return True
         else:
-            vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+            vrep.simxSetObjectPosition(self.clientID,obj,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
             self.cont = self.cont+1
-            self.porTomar.remove(self.objTomado)
+            self.porTomar.remove(obj)
             
             
     def quedaAlgo(self):
@@ -188,6 +188,18 @@ class Simulador(object):
         
         return True
     
+    def objetoTomado(self):
+        errorCode1, target = vrep.simxGetObjectHandle(self.clientID,'m_Sphere', vrep.simx_opmode_oneshot_wait)
+        returnCode,posTarget=vrep.simxGetObjectPosition(self.clientID,target,-1,vrep.simx_opmode_blocking)
+        print ('objeto tomado', self.objTomado)
+        for obj in self.objetos:
+            returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
+            if ((posTarget[0]-0.15)<=posObj[0] and (posTarget[0]+0.15)>=posObj[0] and (posTarget[1]-0.15)<=posObj[1] and (posTarget[1]+0.15)>=posObj[1] and (posTarget[2]+0.15)>=posObj[2] and (posTarget[2]-0.15)<=posObj[2]):
+                self.objTomado=obj
+                print ('objeto tomado',obj,'  ',self.objTomado )
+            else:
+                print ('objeto tomado',obj,'  ',self.objTomado )
+                
     def tomarObjeto(self, moveTarget):
         self.moverLados('m_Sphere','customizableTable_tableTop')
         inputBuffer=bytearray()    
@@ -237,8 +249,6 @@ class Simulador(object):
                     n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
                     vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                     returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-                
-        
     #end of orientationTarget method
     
     def soltarObjeto(self, moveTarget):
