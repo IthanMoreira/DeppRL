@@ -172,9 +172,9 @@ class Simulador(object):
         if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] ):
                 return True
         else:
-            vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+            vrep.simxSetObjectPosition(self.clientID,obj,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
             self.cont = self.cont+1
-            self.porTomar.remove(self.objTomado)
+            self.porTomar.remove(self.obj)
             
             
     def quedaAlgo(self):
