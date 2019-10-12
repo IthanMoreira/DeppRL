@@ -30,7 +30,7 @@ class Deep_NN:
         self.epsilon_decay = 0.995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=1000000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (3, 3)
         self.tamano_filtro2 = (2, 2)
@@ -53,8 +53,8 @@ class Deep_NN:
         cnn.add(Flatten())
         cnn.add(Dense(256, activation='relu'))
         cnn.add(Dropout(0.5))
-        cnn.add(Dense(self.cantidad_acciones))
-
+        cnn.add(Dense(self.cantidad_acciones, activation='linear'))
+        
         cnn.compile(loss='mse',
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
@@ -92,58 +92,75 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
-    est=sim.kinectVisionRGB()
-    """
-    sim.seleccion(0)
-    sim.seleccion(1)
-    sim.seleccion(2)
-    sim.seleccion(3)
-    sim.seleccion(4)
-    sim.seleccion(5)
     
+    
+    
+    #print(len(posiciones))
+    sim.tomarObjeto('m_Sphere')           
+    #dere
+    sim.moverLados('m_Sphere','customizableTable_tableTop#0')  
+    #izq
+    sim.moverLados('m_Sphere','customizableTable_tableTop#1')  
+    #soltar
+    sim.soltarObjeto('m_Sphere')
+    #casa
+    sim.volverCasa()
+    
+    sim.completado()
+    sim.enMesa()
+    sim.obtenerPos()
+    sim.posEnMesa()
+    sim.quedaAlgo()
     sim.restartScenario()    
-    
+    est=sim.kinectVisionRGB()
     
     """
     
-    
+    #21|12
     
     agente = Deep_NN(estado=est) 
+    
+   
     done = False
-    batch_size = 500
-
+    batch_size = 128
+    rewardCum=0
+    state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+    
+    while len(agente.memory) < 500:
+        action = agente.decision(state)            
+        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        agente.experiencia(state, action, reward, next_state, done)              
+        state = next_state
+        if done:
+                print(" score: ",rewardCum," e : ",agente.epsilon)#                      
+                sim.restartScenario()
+    
+    
     for e in range(agente.episodios):
-        
+        sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         
-        for time in range(500):
+        for time in range(300):
             
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done)                        
             #reward = reward if not done else -1
+            rewardCum=reward+rewardCum
             state = next_state
             
             if done:
                 agente.actualizar()
-                print("episode: ",e," score: ",reward," e : ",agente.epsilon)#                      
+                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon)#                      
                 break
               
         
-        if len(agente.memory) > batch_size: 
-            print("entrenando")
-            agente.entrenar(batch_size)
-        sim.restartScenario()
+            if len(agente.memory) > batch_size:                
+                agente.entrenar(batch_size)
+        
+        
                 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
 
-"""
-cnn.fit(
-    entrenamiento_generador,
-    steps_per_epoch=pasos,
-    epochs=epocas,
-    validation_data=validacion_generador,
-    validation_steps=validation_steps)
 
-"""
