@@ -92,7 +92,12 @@ class Deep_NN:
 if __name__ == "__main__":
     
     sim = simu()
-    
+    sim.seleccion(0)
+    sim.seleccion(1)
+    sim.seleccion(2)
+    sim.seleccion(3)
+    sim.seleccion(4)
+    sim.restartScenario()
     
     
     #print(len(posiciones))

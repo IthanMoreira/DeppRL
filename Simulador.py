@@ -171,6 +171,11 @@ class Simulador(object):
         
         if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] ):
                 return True
+        else:
+            vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
+            self.cont = self.cont+1
+            self.porTomar.remove(self.objTomado)
+            
             
     def quedaAlgo(self):
         errorCode1, mesa = vrep.simxGetObjectHandle(self.clientID,'customizableTable_tableTop', vrep.simx_opmode_oneshot_wait)
@@ -183,7 +188,19 @@ class Simulador(object):
         
         return True
     
-    def tomarObjeto(self, moveTarget): 
+    def tomarObjeto(self, moveTarget):
+        self.moverLados('m_Sphere','customizableTable_tableTop')
+        inputBuffer=bytearray()    
+        res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+                                                                                       'suctionPad',
+                                                                                       vrep.sim_scripttype_childscript,
+                                                                                       'sysCall_cleanup',
+                                                                                       [],
+                                                                                       [],
+                                                                                       [],
+                                                                                       inputBuffer,
+                                                                                       vrep.simx_opmode_blocking)
+        
         obj=random.choice(self.porTomar)
         if self.enMesa(obj):
             self.objTomado=obj
