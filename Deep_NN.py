@@ -18,6 +18,7 @@ from collections import deque
 
 
 K.clear_session()
+#sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True)) el javier usa este comando
 sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
