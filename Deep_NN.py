@@ -18,8 +18,8 @@ from collections import deque
 
 
 K.clear_session()
-#sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True)) el javier usa este comando
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True)) #el javier usa este comando
+#sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
     def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=5, estado=np.array([])):
@@ -118,6 +118,7 @@ if __name__ == "__main__":
     sim.obtenerPos()
     sim.posEnMesa()
     sim.quedaAlgo()
+    sim.objetoTomado()
     sim.restartScenario()    
 
     

@@ -199,6 +199,9 @@ class Simulador(object):
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             if ((posTarget[0]-0.15)<=posObj[0] and (posTarget[0]+0.15)>=posObj[0] and (posTarget[1]-0.15)<=posObj[1] and (posTarget[1]+0.15)>=posObj[1] and (posTarget[2]+0.15)>=posObj[2] and (posTarget[2]-0.15)<=posObj[2]):
                 self.objTomado=obj
+                break
+            else: 
+                self.objTomado=0
                 #print ('objeto tomado',obj,'  ',self.objTomado )
             
                 
@@ -218,9 +221,12 @@ class Simulador(object):
                                                                                        inputBuffer,
                                                                                        vrep.simx_opmode_blocking)
             
-        
-        obj=random.choice(self.porTomar)
-        bandera=True
+        if (len(self.porTomar)!=0):
+            obj=random.choice(self.porTomar)
+            bandera=True
+        else:
+            bandera=False
+            
         while bandera==True:
             if self.enMesa(obj):
                 
@@ -261,7 +267,10 @@ class Simulador(object):
                     bandera=False
                     self.objetoTomado()
             else:
-                obj=random.choice(self.porTomar)
+                if (len(self.porTomar)!=0):
+                    obj=random.choice(self.porTomar)
+                    self.objetoTomado()
+                bandera=False
                 
         #end of orientationTarget method
         
