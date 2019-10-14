@@ -94,7 +94,6 @@ if __name__ == "__main__":
     sim = simu()
     """
     sim.seleccion(0)
-    sim.objetoTomado()
     sim.seleccion(1)
     sim.seleccion(2)
     sim.seleccion(3)

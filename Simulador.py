@@ -22,6 +22,7 @@ class Simulador(object):
         self.posObj6,self.obj6Id=self.obtenerPos('Disc1')
         self.objTomado=0
         self.mesa=0
+        self.ultimaPosObj=[]
         self.objetos = [self.obj1Id,self.obj2Id ,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
         self.posicionIni=[ self.posObj1, self.posObj2, self.posObj3, self.posObj4, self.posObj5, self.posObj6]
         returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
@@ -169,7 +170,7 @@ class Simulador(object):
         returnCode,posMesa=vrep.simxGetObjectPosition(self.clientID,mesa,-1,vrep.simx_opmode_blocking)
         returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
         
-        if((posMesa[0]-0.22)<=posObj[0] and (posMesa[0]+0.22)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] ):
+        if((posMesa[0]-0.5)<=posObj[0] and (posMesa[0]+0.5)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] and (posMesa[2]+0.2)>=posObj[2] and (posMesa[1]-0.1)<=posObj[2] ):
                 return True
         else:
             vrep.simxSetObjectPosition(self.clientID,obj,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
@@ -199,12 +200,16 @@ class Simulador(object):
                 self.objTomado=obj
                 print ('objeto tomado',obj,'  ',self.objTomado )
             else:
+                self.objTomado=0
                 print ('objeto tomado',obj,'  ',self.objTomado )
                 
     def tomarObjeto(self, moveTarget):
-        self.moverLados('m_Sphere','customizableTable_tableTop')
-        inputBuffer=bytearray()    
-        res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+        if self.objTomado!=0:
+            errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
+            vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
+            time.sleep(1)
+            inputBuffer=bytearray()    
+            res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
                                                                                        'suctionPad',
                                                                                        vrep.sim_scripttype_childscript,
                                                                                        'sysCall_cleanup',
@@ -213,6 +218,7 @@ class Simulador(object):
                                                                                        [],
                                                                                        inputBuffer,
                                                                                        vrep.simx_opmode_blocking)
+            
         
         obj=random.choice(self.porTomar)
         if self.enMesa(obj):
@@ -222,7 +228,7 @@ class Simulador(object):
             if errorCode1==vrep.simx_error_noerror :
                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
                 returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-                
+                self.ultimaPosObj=positionObj1
                 n=(positionObj1[0],positionObj1[1],positionTar[2])
                 
                 aux=(positionObj1[2]+0.05)
