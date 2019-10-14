@@ -131,7 +131,7 @@ if __name__ == "__main__":
     
    
     done = False
-    batch_size = 128
+    batch_size = 70
     rewardCum=0
     state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
     
