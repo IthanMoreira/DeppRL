@@ -372,7 +372,7 @@ class Simulador(object):
         returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,self.objTomado,-1,vrep.simx_opmode_blocking)
         returnCode,positionMesaIzq=vrep.simxGetObjectPosition(self.clientID,mesaIzq,-1,vrep.simx_opmode_blocking)  
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
-        retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,False                       
+        retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,self.quedaAlgo()                       
         if errorCode==vrep.simx_error_noerror:
             if((positionMesaIzq[0]-0.15)<=positionObj1[0] and (positionMesaIzq[0]+0.15)>=positionObj1[0] and (positionMesaIzq[1]-0.15)<=positionObj1[1] and (positionMesaIzq[1]+0.15)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   
                 #print ('entre mesa izq')
@@ -437,9 +437,9 @@ class Simulador(object):
             self.soltarObjeto('m_Sphere')
             return self.completado()
             
-        if(accion==4):
-            self.volverCasa()
-            return self.completado() 
+        #if(accion==4):
+         #   self.volverCasa()
+          #  return self.completado() 
             
         #if(accion==5):
         #    self.restartScenario()
