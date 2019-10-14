@@ -176,7 +176,7 @@ class Simulador(object):
             vrep.simxSetObjectPosition(self.clientID,obj,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
             self.cont = self.cont+1
             self.porTomar.remove(obj)
-        print(obj)
+        #print(obj)
             
             
     def quedaAlgo(self):
@@ -186,7 +186,7 @@ class Simulador(object):
         for obj in self.objetos:
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             if((posMesa[0]-0.5)<=posObj[0] and (posMesa[0]+0.5)>=posObj[0] and (posMesa[1]-0.3)<=posObj[1] and (posMesa[1]+0.3)>=posObj[1] or self.objTomado!=0 ):
-                print("queda algo : ",obj)    
+                #print("queda algo : ",obj)    
                 return False
             
         return True
@@ -194,12 +194,12 @@ class Simulador(object):
     def objetoTomado(self):
         errorCode1, target = vrep.simxGetObjectHandle(self.clientID,'m_Sphere', vrep.simx_opmode_oneshot_wait)
         returnCode,posTarget=vrep.simxGetObjectPosition(self.clientID,target,-1,vrep.simx_opmode_blocking)
-        print ('objeto tomado', self.objTomado)
+        #print ('objeto tomado', self.objTomado)
         for obj in self.objetos:
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             if ((posTarget[0]-0.15)<=posObj[0] and (posTarget[0]+0.15)>=posObj[0] and (posTarget[1]-0.15)<=posObj[1] and (posTarget[1]+0.15)>=posObj[1] and (posTarget[2]+0.15)>=posObj[2] and (posTarget[2]-0.15)<=posObj[2]):
                 self.objTomado=obj
-                print ('objeto tomado',obj,'  ',self.objTomado )
+                #print ('objeto tomado',obj,'  ',self.objTomado )
             
                 
     def tomarObjeto(self, moveTarget):
@@ -403,7 +403,7 @@ class Simulador(object):
 
                     
                 #print ('no entre mesa Der') 
-            print(self.quedaAlgo())
+            #print(self.quedaAlgo())
     
             return retornaA,retornaB,retornaC
 

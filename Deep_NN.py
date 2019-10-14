@@ -136,18 +136,20 @@ if __name__ == "__main__":
     while len(agente.memory) < 500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-        agente.experiencia(state, action, reward, next_state, done)              
+        agente.experiencia(state, action, reward, next_state, done)   
+        rewardCum=reward+rewardCum           
         state = next_state
         if done:
                 print(" score: ",rewardCum," e : ",agente.epsilon)#                      
                 sim.restartScenario()
+                rewardCum=0
     
     
     for e in range(agente.episodios):
         sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-        
-        for time in range(300):
+        rewardCum=0
+        for time in range(500):
             
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
