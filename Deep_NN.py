@@ -131,7 +131,7 @@ if __name__ == "__main__":
     
    
     done = False
-    batch_size = 70
+    batch_size = 10
     rewardCum=0
     state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
     
@@ -151,7 +151,8 @@ if __name__ == "__main__":
         sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         rewardCum=0
-        for time in range(500):
+        time=0
+        while True:
             
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -162,13 +163,15 @@ if __name__ == "__main__":
             
             if done:
                 agente.actualizar()
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon)#                      
+                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)#                      
                 break
               
         
             if len(agente.memory) > batch_size:                
                 agente.entrenar(batch_size)
-        agente.entrenar(500)
+            time=time+1
+        if len(agente.memory) > 1000:                
+                agente.entrenar(1000)
         
                 
         # if e % 10 == 0:
