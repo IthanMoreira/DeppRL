@@ -48,9 +48,9 @@ class Simulador(object):
         returnCode,posMesa=vrep.simxGetObjectPosition(self.clientID,mesa,-1,vrep.simx_opmode_blocking)
         
         if errorCode1==vrep.simx_error_noerror:
-            pos1=(posMesa[0]+0.20,posMesa[1]+0.15,posMesa[2]+0.08)
-            pos2=(posMesa[0],posMesa[1]+0.15,posMesa[2]+0.08)
-            pos3=(posMesa[0]-0.20,posMesa[1]+0.15,posMesa[2]+0.08)   
+            pos1=(posMesa[0]+0.20,posMesa[1]+0.12,posMesa[2]+0.08)
+            pos2=(posMesa[0],posMesa[1]+0.12,posMesa[2]+0.08)
+            pos3=(posMesa[0]-0.20,posMesa[1]+0.12,posMesa[2]+0.08)   
             
             pos4=(posMesa[0]+0.20,posMesa[1],posMesa[2]+0.08)
             pos5=(posMesa[0],posMesa[1],posMesa[2]+0.08)
