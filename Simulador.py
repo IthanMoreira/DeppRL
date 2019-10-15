@@ -48,17 +48,17 @@ class Simulador(object):
         returnCode,posMesa=vrep.simxGetObjectPosition(self.clientID,mesa,-1,vrep.simx_opmode_blocking)
         
         if errorCode1==vrep.simx_error_noerror:
-            pos1=(posMesa[0]+0.20,posMesa[1]+0.15,posMesa[2]+0.06)
-            pos2=(posMesa[0],posMesa[1]+0.15,posMesa[2]+0.06)
-            pos3=(posMesa[0]-0.20,posMesa[1]+0.15,posMesa[2]+0.06)   
+            pos1=(posMesa[0]+0.20,posMesa[1]+0.15,posMesa[2]+0.08)
+            pos2=(posMesa[0],posMesa[1]+0.15,posMesa[2]+0.08)
+            pos3=(posMesa[0]-0.20,posMesa[1]+0.15,posMesa[2]+0.08)   
             
-            pos4=(posMesa[0]+0.20,posMesa[1],posMesa[2]+0.06)
-            pos5=(posMesa[0],posMesa[1],posMesa[2]+0.06)
-            pos6=(posMesa[0]-0.2,posMesa[1],posMesa[2]+0.06)
+            pos4=(posMesa[0]+0.20,posMesa[1],posMesa[2]+0.08)
+            pos5=(posMesa[0],posMesa[1],posMesa[2]+0.08)
+            pos6=(posMesa[0]-0.2,posMesa[1],posMesa[2]+0.08)
             
-            pos7=(posMesa[0]+0.20,posMesa[1]-0.15,posMesa[2]+0.06)
-            pos8=(posMesa[0],posMesa[1]-0.2,posMesa[2]+0.06)
-            pos9=(posMesa[0]-0.20,posMesa[1]-0.15,posMesa[2]+0.06)
+            pos7=(posMesa[0]+0.20,posMesa[1]-0.15,posMesa[2]+0.08)
+            pos8=(posMesa[0],posMesa[1]-0.2,posMesa[2]+0.08)
+            pos9=(posMesa[0]-0.20,posMesa[1]-0.15,posMesa[2]+0.08)
             
             posiciones=[pos1,pos2,pos3,pos4,pos5,pos6,pos7,pos8,pos9]
             
