@@ -389,7 +389,7 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,self.quedaAlgo()
+                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,self.quedaAlgo()
             else:    
                 #print ('no entre mesa izq')    
                 if((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
@@ -408,7 +408,7 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,self.quedaAlgo()
+                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,self.quedaAlgo()
 
                     
                 #print ('no entre mesa Der') 

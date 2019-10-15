@@ -14,7 +14,7 @@ from tensorflow.python.keras.layers import Dropout, Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
 from collections import deque
-
+import matplotlib.pyplot as plt
 
 
 K.clear_session()
@@ -31,7 +31,7 @@ class Deep_NN:
         self.epsilon_decay = 0.995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=1000000)
+        self.memory = deque(maxlen=3000000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (3, 3)
         self.tamano_filtro2 = (2, 2)
@@ -40,7 +40,7 @@ class Deep_NN:
         self.filtrosConv1 = 32
         self.filtrosConv2 = 64
         self.tamano_pool = (2, 2)
-        self.episodios=100
+        self.episodios=1000
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
@@ -134,7 +134,10 @@ if __name__ == "__main__":
     batch_size = 100
     rewardCum=0
     state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-
+    times=[]
+    recom=[]
+    es=[]
+    """
     while len(agente.memory) < 500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -145,7 +148,7 @@ if __name__ == "__main__":
                 print(" score: ",rewardCum," e : ",agente.epsilon)#                      
                 sim.restartScenario()
                 rewardCum=0
- 
+ """
  
     for e in range(agente.episodios):
         sim.restartScenario()
@@ -163,7 +166,11 @@ if __name__ == "__main__":
             
             if done:
                 agente.actualizar()
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)#                      
+                times.append(time)
+                recom.append(rewardCum)
+                es.append(e)
+                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)# 
+                                                 
                 break
               
         
@@ -173,7 +180,9 @@ if __name__ == "__main__":
         if len(agente.memory) > 1000:                
                 agente.entrenar(1000)
         
-                
+    plt.plot(times,recom)                
+    plt.plot(es,recom)
+    plt.plot(es,times)           
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
 
