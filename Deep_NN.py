@@ -137,7 +137,7 @@ if __name__ == "__main__":
     times=[]
     recom=[]
     es=[]
-    """
+    
     while len(agente.memory) < 500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -148,7 +148,7 @@ if __name__ == "__main__":
                 print(" score: ",rewardCum," e : ",agente.epsilon)#                      
                 sim.restartScenario()
                 rewardCum=0
- """
+ 
  
     for e in range(agente.episodios):
         sim.restartScenario()
@@ -180,9 +180,12 @@ if __name__ == "__main__":
         if len(agente.memory) > 1000:                
                 agente.entrenar(1000)
         
-    plt.plot(times,recom)                
+    plt.plot(times,recom) 
+    plt.show()               
     plt.plot(es,recom)
-    plt.plot(es,times)           
+    plt.show()
+    plt.plot(es,times)
+    plt.show()           
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
 

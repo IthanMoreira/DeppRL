@@ -170,7 +170,7 @@ class Simulador(object):
         returnCode,posMesa=vrep.simxGetObjectPosition(self.clientID,mesa,-1,vrep.simx_opmode_blocking)
         returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
         
-        if((posMesa[0]-0.5)<=posObj[0] and (posMesa[0]+0.5)>=posObj[0] and (posMesa[1]-0.22)<=posObj[1] and (posMesa[1]+0.22)>=posObj[1] and (posMesa[2]+0.7)>=posObj[2] and (posMesa[1]-0.1)<=posObj[2] ):
+        if((posMesa[0]-0.25)<=posObj[0] and (posMesa[0]+0.25)>=posObj[0] and (posMesa[1]-0.25)<=posObj[1] and (posMesa[1]+0.25)>=posObj[1] and (posMesa[2]+0.7)>=posObj[2] and (posMesa[1]-0.1)<=posObj[2] ):
                 return True
         else:
             vrep.simxSetObjectPosition(self.clientID,obj,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
@@ -185,7 +185,7 @@ class Simulador(object):
         
         for obj in self.objetos:
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-            if((posMesa[0]-0.5)<=posObj[0] and (posMesa[0]+0.5)>=posObj[0] and (posMesa[1]-0.3)<=posObj[1] and (posMesa[1]+0.3)>=posObj[1] or self.objTomado!=0 ):
+            if((posMesa[0]-0.25)<=posObj[0] and (posMesa[0]+0.25)>=posObj[0] and (posMesa[1]-0.25)<=posObj[1] and (posMesa[1]+0.25)>=posObj[1] or self.objTomado!=0 ):
                 #print("queda algo : ",obj)    
                 return False
             
