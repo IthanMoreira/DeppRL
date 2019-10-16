@@ -13,17 +13,15 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dropout, Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
-from collections import deque
+from collections import deque 
 import matplotlib.pyplot as plt
-
-
+    
 K.clear_session()
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True)) #el javier usa este comando
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
     def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, iteraciones=100, cantidad_acciones=4, estado=np.array([])):
-        
         self.aprendizaje = aprendizaje
         self.descuento = descuento # Descuennto de la recompensa futura
         self.epsilon = epsilon # exploracion inicial
