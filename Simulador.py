@@ -271,8 +271,7 @@ class Simulador(object):
                             obj=random.choice(self.porTomar)
                             self.objetoTomado()
                         bandera=False
-        else:
-            bandera=False
+        
         
         
                 
