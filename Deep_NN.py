@@ -29,37 +29,46 @@ class Deep_NN:
         self.epsilon_decay = 0.995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=3000000)
+        self.memory = deque(maxlen=300000)
+        self.buenos_recuerdos = deque(maxlen=300000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
-        self.tamano_filtro1 = (3, 3)
-        self.tamano_filtro2 = (2, 2)
-        self.longitud=200
-        self.altura = 150
+        self.tamano_filtro1 = (8, 8)
+        self.tamano_filtro2 = (4, 4)
+        self.tamano_filtro3 = (3, 3)
+        self.longitud=110
+        self.altura = 84
         self.filtrosConv1 = 32
         self.filtrosConv2 = 64
+        self.filtrosConv3 = 64
         self.tamano_pool = (2, 2)
         self.episodios=1000
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
         cnn = Sequential()
-        cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="same", input_shape=(self.longitud, self.altura, 3), activation='relu'))
+        cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="VALID", input_shape=(self.longitud, self.altura, 3), activation='elu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
-        cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="same"))
+        cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="VALID", activation='elu'))
+        cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
+        
+        cnn.add(Convolution2D(self.filtrosConv3, self.tamano_filtro3, padding ="VALID"))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
         cnn.add(Flatten())
-        cnn.add(Dense(256, activation='relu'))
+        cnn.add(Dense(512, activation='relu'))
         cnn.add(Dropout(0.5))
-        cnn.add(Dense(self.cantidad_acciones, activation='linear'))
+        cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
         
         cnn.compile(loss='mse',
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
         return cnn
-    def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
-        self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
+    def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado,bandera):
+        if bandera:
+            self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
+        elif not bandera:
+            self.buenos_recuerdos.append((estado, accion, recompensa, estado_siguiente, logrado))
     
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
@@ -67,8 +76,8 @@ class Deep_NN:
         valores = self.modelo.predict(estado)
         return np.argmax(valores[0])  # accion random o mayor
        
-    def entrenar(self, batch_size):
-        minibatch = random.sample(self.memory, batch_size)#con lo guardado se entrena la red con experiencias random
+    def entrenar(self, batch_size, memo):
+        minibatch = random.sample(memo, batch_size)#con lo guardado se entrena la red con experiencias random
         for estado, accion, recompensa, estado_siguiente, logrado in minibatch:
             target = recompensa
             if not logrado:
@@ -89,6 +98,8 @@ class Deep_NN:
     def actualizar (self):
         self.modelo.set_weights(self.modelo.get_weights())
 if __name__ == "__main__":
+    
+  
     
     sim = simu()
     """
@@ -118,15 +129,12 @@ if __name__ == "__main__":
     sim.quedaAlgo()
     sim.objetoTomado()
     sim.restartScenario()    
-
-    
-
-    
-    #21|12
+    print(agente.modelo.predict(est))
     """
     est=sim.kinectVisionRGB()
     agente = Deep_NN(estado=est) 
     
+
    
     done = False
     batch_size = 100
@@ -137,16 +145,18 @@ if __name__ == "__main__":
     es=[]
     
     while len(agente.memory) < 500:
-        action = agente.decision(state)            
+        action = agente.decision(state)
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-        agente.experiencia(state, action, reward, next_state, done)   
-        rewardCum=reward+rewardCum           
+        agente.experiencia(state, action, reward, next_state, done,True)
+        rewardCum=reward+rewardCum
         state = next_state
+        if reward==1:
+                agente.experiencia(state, action, reward, next_state, done,False)
         if done:
-                print(" score: ",rewardCum," e : ",agente.epsilon)#                      
+                print(" score: ",rewardCum," e : ",agente.epsilon)
                 sim.restartScenario()
                 rewardCum=0
- 
+    
  
     for e in range(agente.episodios):
         sim.restartScenario()
@@ -157,9 +167,12 @@ if __name__ == "__main__":
             
             action = agente.decision(state)            
             next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            agente.experiencia(state, action, reward, next_state, done)                        
+            agente.experiencia(state, action, reward, next_state, done,True)                        
             #reward = reward if not done else -1
             rewardCum=reward+rewardCum
+            if reward==1:
+                agente.experiencia(state, action, reward, next_state, done,False)
+            
             state = next_state
             
             if done:
@@ -173,10 +186,10 @@ if __name__ == "__main__":
               
         
             if len(agente.memory) > batch_size:                
-                agente.entrenar(batch_size)
+                agente.entrenar(batch_size,agente.memory)
             time=time+1
-        if len(agente.memory) > 10000:                
-                agente.entrenar(10000)
+        if len(agente.buenos_recuerdos) > 1000:
+            agente.entrenar(1000,agente.buenos_recuerdos)
         
     plt.plot(recom,times) 
     plt.show()               
@@ -184,7 +197,7 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
+
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
-
 

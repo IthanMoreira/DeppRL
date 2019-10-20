@@ -341,7 +341,7 @@ class Simulador(object):
             
             imgRgb = np.array(imegenRgb,dtype=np.uint8)
             
-            imgRgb.resize([200,150,3])
+            imgRgb.resize([110,84,3])
             
             imgRgb= np.expand_dims(imgRgb, axis=0)
         
@@ -424,8 +424,8 @@ class Simulador(object):
             return retornaA,retornaB,retornaC
 
     def seleccion(self, accion):
-        if(accion==0):
-            self.tomarObjeto('m_Sphere')           
+        if(accion==0):            
+            self.tomarObjeto('m_Sphere')            
             return self.completado()
                 
         if(accion==1):
