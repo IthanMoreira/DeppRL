@@ -64,11 +64,9 @@ class Deep_NN:
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
         return cnn
-    def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado,bandera):
-        if bandera:
-            self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
-        elif not bandera:
-            self.buenos_recuerdos.append((estado, accion, recompensa, estado_siguiente, logrado))
+    def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
+        self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
+
     
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
@@ -137,8 +135,7 @@ if __name__ == "__main__":
 
    
     done = False
-    batch_size = 1000
-    mejores=50
+    batch_size = 100
     rewardCum=0
     state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
     times=[]
@@ -146,17 +143,13 @@ if __name__ == "__main__":
     es=[]
     
     
-    while len(agente.memory) < 1000:
+    while len(agente.memory) < 300:
         action = agente.decision(state)
-        next_state, reward, done, final = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-        agente.experiencia(state, action, reward, next_state, done,True)
-        
+        next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        agente.experiencia(state, action, reward, next_state, done)        
         state = next_state
-        if reward==1:
-            rewardCum=reward+rewardCum
-            agente.experiencia(state, action, reward, next_state, done,False)
-        if final:
-                print(" score: ",rewardCum," e : ",agente.epsilon)
+        if done:
+                print(" score: ",reward," e : ",agente.epsilon)
                 sim.restartScenario()
                 rewardCum=0
     
@@ -169,22 +162,16 @@ if __name__ == "__main__":
         while True:
             
             action = agente.decision(state)            
-            next_state, reward, done,final = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            agente.experiencia(state, action, reward, next_state, done,True)                        
-            #reward = reward if not done else -1
-            
-            if reward==1:
-                rewardCum=reward+rewardCum
-                agente.experiencia(state, action, reward, next_state, done,False)
-            
+            next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+            agente.experiencia(state, action, reward, next_state, done)
             state = next_state
             
-            if final:
+            if done:
                 agente.actualizar()
                 times.append(time)
                 recom.append(rewardCum)
                 es.append(e)
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)# 
+                print("episode: ",e," score: ",reward," e : ",agente.epsilon," time ",time)# 
                                                  
                 break
               
@@ -192,9 +179,7 @@ if __name__ == "__main__":
             if len(agente.memory) > batch_size:                
                 agente.entrenar(batch_size,agente.memory)
             time=time+1
-        if len(agente.buenos_recuerdos) > mejores:
-            agente.entrenar(mejores,agente.buenos_recuerdos)
-            mejore=mejores+50
+
         
     plt.plot(times,recom) 
     plt.show()               

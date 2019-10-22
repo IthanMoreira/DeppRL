@@ -188,9 +188,9 @@ class Simulador(object):
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             if((posMesa[0]-0.25)<=posObj[0] and (posMesa[0]+0.25)>=posObj[0] and (posMesa[1]-0.25)<=posObj[1] and (posMesa[1]+0.25)>=posObj[1] or self.objTomado!=0 ):
                 #print("queda algo : ",obj)    
-                return False
+                return True
             
-        return True
+        return False
     
     def objetoTomado(self):
         errorCode1, target = vrep.simxGetObjectHandle(self.clientID,'m_Sphere', vrep.simx_opmode_oneshot_wait)
@@ -376,7 +376,7 @@ class Simulador(object):
         returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,self.objTomado,-1,vrep.simx_opmode_blocking)
         returnCode,positionMesaIzq=vrep.simxGetObjectPosition(self.clientID,mesaIzq,-1,vrep.simx_opmode_blocking)  
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
-        retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),0,False,self.quedaAlgo()                       
+        retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,False                       
         if errorCode==vrep.simx_error_noerror:
             if((positionMesaIzq[0]-0.15)<=positionObj1[0] and (positionMesaIzq[0]+0.15)>=positionObj1[0] and (positionMesaIzq[1]-0.15)<=positionObj1[1] and (positionMesaIzq[1]+0.15)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   
                 #print ('entre mesa izq')
@@ -386,14 +386,17 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC,retornaD=self.kinectVisionRGB(),1,True,self.quedaAlgo()
+                    if not self.quedaAlgo():
+                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,True
+                    else:
+                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),0,False
                 else:
                     #print ('Se equivoco al clasificar')
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()
+                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
             else:    
                 #print ('no entre mesa izq')    
                 if((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
@@ -404,21 +407,24 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-
-                        retornaA,retornaB,retornaC,retornaD=self.kinectVisionRGB(),1,True,self.quedaAlgo()
+                        if not self.quedaAlgo():
+                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,True
+                        else:
+                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),0,False
+                            
                     else:
                         #print ('Se equivoco al clasificar')
                         vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()
+                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
 
                     
                 #print ('no entre mesa Der') 
             #print(self.quedaAlgo())
-    
-            return retornaA,retornaB,retornaC,retornaD #imagen,reward,done, final (estado final)
+            #print(retornaA,retornaB,retornaC)
+            return retornaA,retornaB,retornaC #imagen,reward,done
 
         else:
             print ('Error. Completado', errorCode)
