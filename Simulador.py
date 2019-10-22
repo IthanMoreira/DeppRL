@@ -376,7 +376,7 @@ class Simulador(object):
         returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,self.objTomado,-1,vrep.simx_opmode_blocking)
         returnCode,positionMesaIzq=vrep.simxGetObjectPosition(self.clientID,mesaIzq,-1,vrep.simx_opmode_blocking)  
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
-        retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,self.quedaAlgo()                       
+        retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),0,False,self.quedaAlgo()                       
         if errorCode==vrep.simx_error_noerror:
             if((positionMesaIzq[0]-0.15)<=positionObj1[0] and (positionMesaIzq[0]+0.15)>=positionObj1[0] and (positionMesaIzq[1]-0.15)<=positionObj1[1] and (positionMesaIzq[1]+0.15)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   
                 #print ('entre mesa izq')
@@ -386,14 +386,14 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,self.quedaAlgo()
+                    retornaA,retornaB,retornaC,retornaD=self.kinectVisionRGB(),1,True,self.quedaAlgo()
                 else:
                     #print ('Se equivoco al clasificar')
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,self.quedaAlgo()
+                    retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()
             else:    
                 #print ('no entre mesa izq')    
                 if((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
@@ -405,20 +405,20 @@ class Simulador(object):
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
 
-                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,self.quedaAlgo()
+                        retornaA,retornaB,retornaC,retornaD=self.kinectVisionRGB(),1,True,self.quedaAlgo()
                     else:
                         #print ('Se equivoco al clasificar')
                         vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,self.quedaAlgo()
+                        retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()
 
                     
                 #print ('no entre mesa Der') 
             #print(self.quedaAlgo())
     
-            return retornaA,retornaB,retornaC
+            return retornaA,retornaB,retornaC,retornaD #imagen,reward,done, final (estado final)
 
         else:
             print ('Error. Completado', errorCode)
