@@ -29,8 +29,8 @@ class Deep_NN:
         self.epsilon_decay = 0.995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=300000)
-        self.buenos_recuerdos = deque(maxlen=300000)
+        self.memory = deque(maxlen=10000)
+        self.buenos_recuerdos = deque(maxlen=10000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (8, 8)
         self.tamano_filtro2 = (4, 4)
@@ -46,7 +46,7 @@ class Deep_NN:
     
     def contruModelo (self):
         cnn = Sequential()
-        cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="VALID", input_shape=(self.longitud, self.altura, 3), activation='elu'))
+        cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="VALID", input_shape=(self.longitud, self.altura, 3), activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
         cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="VALID", activation='elu'))
@@ -56,7 +56,7 @@ class Deep_NN:
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
         cnn.add(Flatten())
-        cnn.add(Dense(512, activation='relu'))
+        cnn.add(Dense(512, activation='relu'))#sigmoidal--- lineal
         cnn.add(Dropout(0.5))
         cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
         
@@ -137,22 +137,25 @@ if __name__ == "__main__":
 
    
     done = False
-    batch_size = 100
+    batch_size = 1000
+    mejores=50
     rewardCum=0
     state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
     times=[]
     recom=[]
     es=[]
     
-    while len(agente.memory) < 500:
+    
+    while len(agente.memory) < 1000:
         action = agente.decision(state)
-        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        next_state, reward, done, final = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         agente.experiencia(state, action, reward, next_state, done,True)
-        rewardCum=reward+rewardCum
+        
         state = next_state
         if reward==1:
-                agente.experiencia(state, action, reward, next_state, done,False)
-        if done:
+            rewardCum=reward+rewardCum
+            agente.experiencia(state, action, reward, next_state, done,False)
+        if final:
                 print(" score: ",rewardCum," e : ",agente.epsilon)
                 sim.restartScenario()
                 rewardCum=0
@@ -166,16 +169,17 @@ if __name__ == "__main__":
         while True:
             
             action = agente.decision(state)            
-            next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+            next_state, reward, done,final = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             agente.experiencia(state, action, reward, next_state, done,True)                        
             #reward = reward if not done else -1
-            rewardCum=reward+rewardCum
+            
             if reward==1:
+                rewardCum=reward+rewardCum
                 agente.experiencia(state, action, reward, next_state, done,False)
             
             state = next_state
             
-            if done:
+            if final:
                 agente.actualizar()
                 times.append(time)
                 recom.append(rewardCum)
@@ -188,10 +192,11 @@ if __name__ == "__main__":
             if len(agente.memory) > batch_size:                
                 agente.entrenar(batch_size,agente.memory)
             time=time+1
-        if len(agente.buenos_recuerdos) > 1000:
-            agente.entrenar(1000,agente.buenos_recuerdos)
+        if len(agente.buenos_recuerdos) > mejores:
+            agente.entrenar(mejores,agente.buenos_recuerdos)
+            mejore=mejores+50
         
-    plt.plot(recom,times) 
+    plt.plot(times,recom) 
     plt.show()               
     plt.plot(es,recom)
     plt.show()
