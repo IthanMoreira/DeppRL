@@ -49,14 +49,14 @@ class Deep_NN:
         cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="VALID", input_shape=(self.longitud, self.altura, 3), activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
-        cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="VALID", activation='elu'))
+        cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="VALID", activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
         
-        cnn.add(Convolution2D(self.filtrosConv3, self.tamano_filtro3, padding ="VALID"))
+        cnn.add(Convolution2D(self.filtrosConv3, self.tamano_filtro3, padding ="VALID", activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
         cnn.add(Flatten())
-        cnn.add(Dense(512, activation='relu'))#sigmoidal--- lineal
+        cnn.add(Dense(512, activation='sigmoid'))#sigmoidal--- lineal
         cnn.add(Dropout(0.5))
         cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
         
