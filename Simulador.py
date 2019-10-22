@@ -23,8 +23,8 @@ class Simulador(object):
         self.objTomado=0
         self.mesa=0
         self.ultimaPosObj=[]
-        self.objetos = [self.obj1Id,self.obj2Id ,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
-        self.posicionIni=[ self.posObj1, self.posObj2] # , self.posObj3, self.posObj4, self.posObj5, self.posObj6]
+        self.objetos = [self.obj1Id,self.obj2Id] #,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
+        self.posicionIni= [ self.posObj1, self.posObj2] #, self.posObj3, self.posObj4, self.posObj5, self.posObj6]
         returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
         self.cont=0
         self.porTomar=[]
@@ -42,7 +42,7 @@ class Simulador(object):
         
         return posObj,idObj
     
-    def posEnMesa(self):#raro creo que malo
+    def posEnMesa(self):
         self.porTomar=self.objetos[:]
         errorCode1, mesa = vrep.simxGetObjectHandle(self.clientID,'customizableTable_tableTop', vrep.simx_opmode_oneshot_wait)
         returnCode,posMesa=vrep.simxGetObjectPosition(self.clientID,mesa,-1,vrep.simx_opmode_blocking)
