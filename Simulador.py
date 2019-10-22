@@ -63,9 +63,10 @@ class Simulador(object):
             posiciones=[pos1,pos2,pos3,pos4,pos5,pos6,pos7,pos8,pos9]
             
             for obj in self.objetos:
-                aux=random.choice(posiciones)
-                vrep.simxSetObjectPosition(self.clientID,obj,-1,aux,vrep.simx_opmode_oneshot)
-                posiciones.remove(aux)
+                if obj == self.obj1Id or self.obj2Id:
+                    aux=random.choice(posiciones)
+                    vrep.simxSetObjectPosition(self.clientID,obj,-1,aux,vrep.simx_opmode_oneshot)
+                    posiciones.remove(aux)
             
     
     def connectRobot(self):
