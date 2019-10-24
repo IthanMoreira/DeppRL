@@ -390,9 +390,9 @@ class Simulador(object):
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
                     if not self.quedaAlgo():
-                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,True
+                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),2,True
                     else:
-                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),0,False
+                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,False
                 else:
                     #print ('Se equivoco al clasificar')
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
@@ -411,9 +411,9 @@ class Simulador(object):
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
                         if not self.quedaAlgo():
-                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,True
+                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),2,True
                         else:
-                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),0,False
+                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,False
                             
                     else:
                         #print ('Se equivoco al clasificar')

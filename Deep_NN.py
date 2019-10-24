@@ -131,18 +131,18 @@ if __name__ == "__main__":
     """
     est=sim.kinectVisionRGB()
     agente = Deep_NN(estado=est) 
-    
+    agente.cargar_modelo("uno")
 
    
     done = False
-    batch_size = 100
+    batch_size = 1000
     rewardCum=0
     state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
     times=[]
     recom=[]
     es=[]
     
-    
+    """   
     while len(agente.memory) < 300:
         action = agente.decision(state)
         next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -152,7 +152,7 @@ if __name__ == "__main__":
                 print(" score: ",reward," e : ",agente.epsilon)
                 sim.restartScenario()
                 rewardCum=0
-    
+    """    
  
     for e in range(agente.episodios):
         sim.restartScenario()
@@ -190,4 +190,5 @@ if __name__ == "__main__":
 
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
-
+#agente.guardar_modelo("uno")
+#agente.cargar_modelo("uno")
