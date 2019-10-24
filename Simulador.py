@@ -399,10 +399,10 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
-            else:    
-                #print ('no entre mesa izq')    
-                if((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
+                    retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()   
+
+            elif((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
+
                     #print ('entre mesa Der')
                     if (self.obj1Id==self.objTomado or self.obj4Id==self.objTomado or self.obj5Id==self.objTomado):
                         #print ('clasifico bn')
@@ -421,7 +421,9 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
+                        retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()
+            else:
+                retornaA,retornaB,retornaC,retornaD = self.kinectVisionRGB(),-0.01,False,self.quedaAlgo()
 
                     
                 #print ('no entre mesa Der') 
