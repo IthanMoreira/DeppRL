@@ -9,7 +9,8 @@ import math
 import numpy as np
 import time
 import random
-
+import matplotlib.pyplot as plt
+import cv2
 class Simulador(object):
  
     def __init__(self):
@@ -342,16 +343,22 @@ class Simulador(object):
             
             imgRgb = np.array(imegenRgb,dtype=np.uint8)
             
-            imgRgb.resize([110,84,3])
+            imgRgb.resize([resolution[1], resolution[0], 3])
+           
+            imgRgb=np.rot90(imgRgb,2)
+            imgRgb=np.fliplr(imgRgb)
+            imgRgb=cv2.cvtColor(imgRgb, cv2.COLOR_RGB2BGR)
             
+            #plt.imshow(imgRgb)
+            #plt.show()
             imgRgb= np.expand_dims(imgRgb, axis=0)
-        
+                        
         else:
             print ('Error. kinectvisionRGB ', errorCode)
-        
         return imgRgb
     #end of KinectVisionRGB method
-    
+
+    #end of KinectVisionRGB method
     def kinectVisionPATH(self):
         errorCode1,path=vrep.simxGetObjectHandle(self.clientID,'kinect_depth',vrep.simx_opmode_oneshot_wait)
 
@@ -399,7 +406,7 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()   
+                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
 
             elif((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
 
@@ -421,9 +428,9 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC,retornaD= self.kinectVisionRGB(),-1,False,self.quedaAlgo()
+                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
             else:
-                retornaA,retornaB,retornaC,retornaD = self.kinectVisionRGB(),-0.01,False,self.quedaAlgo()
+                retornaA,retornaB,retornaC= self.kinectVisionRGB(),-0.01,False
 
                     
                 #print ('no entre mesa Der') 

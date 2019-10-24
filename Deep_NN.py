@@ -35,8 +35,8 @@ class Deep_NN:
         self.tamano_filtro1 = (8, 8)
         self.tamano_filtro2 = (4, 4)
         self.tamano_filtro3 = (3, 3)
-        self.longitud=110
-        self.altura = 84
+        self.longitud=128
+        self.altura = 64
         self.filtrosConv1 = 32
         self.filtrosConv2 = 64
         self.filtrosConv3 = 64
@@ -46,7 +46,7 @@ class Deep_NN:
     
     def contruModelo (self):
         cnn = Sequential()
-        cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="VALID", input_shape=(self.longitud, self.altura, 3), activation='relu'))
+        cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="VALID", input_shape=(self.altura,self.longitud, 3), activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
         cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="VALID", activation='relu'))
@@ -131,7 +131,7 @@ if __name__ == "__main__":
     """
     est=sim.kinectVisionRGB()
     agente = Deep_NN(estado=est) 
-    agente.cargar_modelo("uno")
+    #agente.cargar_modelo("uno")
 
    
     done = False
@@ -142,18 +142,11 @@ if __name__ == "__main__":
     recom=[]
     es=[]
     
-    """   
-    while len(agente.memory) < 300:
-        action = agente.decision(state)
-        next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-        agente.experiencia(state, action, reward, next_state, done)        
-        state = next_state
-        if done:
-                print(" score: ",reward," e : ",agente.epsilon)
-                sim.restartScenario()
-                rewardCum=0
-    """    
- 
+
+    
+
+
+
     for e in range(agente.episodios):
         sim.restartScenario()
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -163,7 +156,10 @@ if __name__ == "__main__":
             
             action = agente.decision(state)            
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+            if reward==-0.01:
+                reward=reward*time
             agente.experiencia(state, action, reward, next_state, done)
+            print(reward)
             state = next_state
             
             if done:
