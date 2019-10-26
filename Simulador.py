@@ -347,10 +347,11 @@ class Simulador(object):
            
             imgRgb=np.rot90(imgRgb,2)
             imgRgb=np.fliplr(imgRgb)
-            imgRgb=cv2.cvtColor(imgRgb, cv2.COLOR_RGB2BGR)
+            
             
             #plt.imshow(imgRgb)
             #plt.show()
+            #print(imgRgb)
             imgRgb= np.expand_dims(imgRgb, axis=0)
                         
         else:
@@ -383,11 +384,14 @@ class Simulador(object):
         returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,self.objTomado,-1,vrep.simx_opmode_blocking)
         returnCode,positionMesaIzq=vrep.simxGetObjectPosition(self.clientID,mesaIzq,-1,vrep.simx_opmode_blocking)  
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
-        if not self.quedaAlgo():
-            retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,True
-        else:
-            retornaA,retornaB,retornaC= self.kinectVisionRGB(),0,False                           
+        
+        rpp=2
+        rp=1
+        rm=-1
+        rn=-0.01
+        
         if errorCode==vrep.simx_error_noerror:
+            retornaA=self.kinectVisionRGB()
             if((positionMesaIzq[0]-0.15)<=positionObj1[0] and (positionMesaIzq[0]+0.15)>=positionObj1[0] and (positionMesaIzq[1]-0.15)<=positionObj1[1] and (positionMesaIzq[1]+0.15)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   
                 #print ('entre mesa izq')
                 if (self.obj3Id==self.objTomado or self.obj2Id==self.objTomado or self.obj6Id==self.objTomado):               
@@ -397,16 +401,16 @@ class Simulador(object):
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
                     if not self.quedaAlgo():
-                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),2,True
+                        retornaA,retornaB,retornaC=retornaA,rpp,True
                     else:
-                        retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,False
+                        retornaA,retornaB,retornaC=retornaA,rp,False
                 else:
                     #print ('Se equivoco al clasificar')
                     vrep.simxSetObjectPosition(self.clientID,self.objTomado,-1,self.posicionIni[self.cont],vrep.simx_opmode_oneshot)
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
+                    retornaA,retornaB,retornaC= retornaA,rm,True
 
             elif((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
 
@@ -418,9 +422,9 @@ class Simulador(object):
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
                         if not self.quedaAlgo():
-                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),2,True
+                            retornaA,retornaB,retornaC=retornaA,rpp,True
                         else:
-                            retornaA,retornaB,retornaC=self.kinectVisionRGB(),1,False
+                            retornaA,retornaB,retornaC=retornaA,rp,False
                             
                     else:
                         #print ('Se equivoco al clasificar')
@@ -428,9 +432,12 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC= self.kinectVisionRGB(),-1,True
+                        retornaA,retornaB,retornaC= retornaA,rm,True
             else:
-                retornaA,retornaB,retornaC= self.kinectVisionRGB(),-0.01,False
+                if not self.quedaAlgo():
+                    retornaA,retornaB,retornaC= retornaA,rn,True
+                else:
+                    retornaA,retornaB,retornaC= retornaA,rn,False                           
 
                     
                 #print ('no entre mesa Der') 
@@ -443,6 +450,7 @@ class Simulador(object):
             return retornaA,retornaB,retornaC
 
     def seleccion(self, accion):
+        
         if(accion==0):            
             self.tomarObjeto('m_Sphere')            
             return self.completado()
@@ -458,18 +466,8 @@ class Simulador(object):
         if(accion==3):
             self.soltarObjeto('m_Sphere')
             return self.completado()
-            
-        #if(accion==4):
-         #   self.volverCasa()
-          #  return self.completado() 
-            
-        #if(accion==5):
-        #    self.restartScenario()
-        #    z,r,m =self.completado()
-        #    return z,-1,m
-
-        
-    #end of Reward method
+      
+ #end of Reward method
     
     
     
