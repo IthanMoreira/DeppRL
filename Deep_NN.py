@@ -145,16 +145,19 @@ if __name__ == "__main__":
     timer=0
     while len(agente.memory) < 5000:
         action = agente.decision(state)            
-        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso        
+        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        
+        if reward==-0.01:
+                reward=reward*timer
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, rewardCum, next_state, done)              
         state = next_state
-        timer=timer+1
+        
         if done:
                 print(" score: ",rewardCum," time : ",timer)#                      
                 sim.restartScenario()
                 rewardCum=0
-
+        timer=timer+1
 
 
     for e in range(agente.episodios):
