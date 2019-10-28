@@ -11,7 +11,7 @@ import time as tim
 from Simulador import Simulador as simu 
 from tensorflow.python.keras import optimizers
 from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dropout, Flatten, Dense
+from tensorflow.python.keras.layers import Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
 from collections import deque 
@@ -22,23 +22,25 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.9, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
-        self.descuento = descuento # Descuennto de la recompensa futura
+        #self.descuento = descuento # Descuennto de la recompensa futura
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
-        self.gamma = 0.4 #0.9
+        self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=1000)
-        #self.buenos_recuerdos = deque(maxlen=1000)
+        self.memory = deque(maxlen=1000000)
+        #self.buenos_recuerdos = deque(maxlen=2000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
         self.tamano_filtro1 = (8, 8)
         self.tamano_filtro2 = (4, 4)
+        self.tamano_filtro3 = (2, 2)
         self.longitud=128
         self.altura = 64
-        self.filtrosConv1 = 32
-        self.filtrosConv2 = 64
+        self.filtrosConv1 = 8
+        self.filtrosConv2 = 16
+        self.filtrosConv3 = 32
         self.tamano_pool = (2, 2)
         self.episodios=1000
         self.modelo=self.contruModelo()
@@ -48,15 +50,17 @@ class Deep_NN:
         cnn.add(Convolution2D(self.filtrosConv1, self.tamano_filtro1, padding ="same", input_shape=(self.altura,self.longitud, 3), activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
 
-        cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="same"))
+        cnn.add(Convolution2D(self.filtrosConv2, self.tamano_filtro2, padding ="same",activation='relu'))
+        cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
+        
+        cnn.add(Convolution2D(self.filtrosConv3, self.tamano_filtro3, padding ="same",activation='relu'))
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
         
         cnn.add(Flatten())
-        cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
-        cnn.add(Dropout(0.5))
-        cnn.add(Dense(self.cantidad_acciones, activation='linear'))
+        #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
+        cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
         
-        cnn.compile(loss='mse',
+        cnn.compile(loss='sparse_categorical_crossentropy',
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
         return cnn
@@ -81,7 +85,7 @@ class Deep_NN:
                           np.amax(self.modelo.predict(estado_siguiente)[0]))
             target_f = self.modelo.predict(estado)           
             target_f[0][accion] = target            
-            self.modelo.fit(estado, target_f, epochs=1, verbose=0)
+            self.modelo.fit(estado, target_f,sample_weight=recompensa, epochs=1, verbose=0)
             
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
@@ -91,8 +95,8 @@ class Deep_NN:
 
     def guardar_modelo(self, name):
         self.modelo.save_weights(name)
-    def actualizar (self):
-        self.modelo.set_weights(self.modelo.get_weights())
+    ##def actualizar (self):
+     #   self.modelo.set_weights(self.modelo.get_weights())
 if __name__ == "__main__":
     
   
@@ -127,21 +131,28 @@ if __name__ == "__main__":
     sim.restartScenario()    
     print(agente.modelo.predict(est))
     """
-    est=sim.kinectVisionRGB()
-    agente = Deep_NN(estado=est) 
+    state=sim.kinectVisionRGB()
+    agente = Deep_NN(estado=state) 
     #agente.cargar_modelo("uno")
 
-   
+    #agente.modelo.summary()
     done = False
-    batch_size = 500
-    rewardCum=0
-    state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+    batch_size = 128
     times=[]
     recom=[]
     es=[]
-    
+    rewardCum=0
 
-    
+    while len(agente.memory) < 5000:
+        action = agente.decision(state)            
+        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso        
+        rewardCum=reward+rewardCum
+        agente.experiencia(state, action, rewardCum, next_state, done)              
+        state = next_state
+        if done:
+                print(" score: ",rewardCum," e : ",agente.epsilon)#                      
+                sim.restartScenario()
+                rewardCum=0
 
 
 
@@ -158,21 +169,21 @@ if __name__ == "__main__":
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             if reward==-0.01:
                 reward=reward*time
-            agente.experiencia(state, action, reward, next_state, done)
-            
+                       
             state = next_state
-            
+            rewardCum=reward+rewardCum
+            agente.experiencia(state, action, rewardCum, next_state, done)
             if done:
-                agente.actualizar()
+                
                 times.append(time)
                 recom.append(rewardCum)
                 es.append(e)
-                print("episode: ",e," score: ",reward," e : ",agente.epsilon," time ",time)# 
+                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)# 
                                                  
                 break
               
         
-            if len(agente.memory) > batch_size:                
+            if len(agente.memory) >= batch_size:                
                 agente.entrenar(batch_size,agente.memory)
             time=time+1
         sim.restartScenario()

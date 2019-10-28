@@ -389,9 +389,9 @@ class Simulador(object):
         rp=1
         rm=-1
         rn=-0.01
-        
+        retornaA=self.kinectVisionRGB()
         if errorCode==vrep.simx_error_noerror:
-            retornaA=self.kinectVisionRGB()
+            
             if((positionMesaIzq[0]-0.15)<=positionObj1[0] and (positionMesaIzq[0]+0.15)>=positionObj1[0] and (positionMesaIzq[1]-0.15)<=positionObj1[1] and (positionMesaIzq[1]+0.15)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   
                 #print ('entre mesa izq')
                 if (self.obj3Id==self.objTomado or self.obj2Id==self.objTomado or self.obj6Id==self.objTomado):               
@@ -447,7 +447,7 @@ class Simulador(object):
 
         else:
             print ('Error. Completado', errorCode)
-            return retornaA,retornaB,retornaC
+            return retornaA,0,True
 
     def seleccion(self, accion):
         
