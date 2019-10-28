@@ -85,7 +85,7 @@ class Deep_NN:
                           np.amax(self.modelo.predict(estado_siguiente)[0]))
             target_f = self.modelo.predict(estado)           
             target_f[0][accion] = target            
-            self.modelo.fit(estado, target_f,sample_weight=recompensa, epochs=1, verbose=0)
+            self.modelo.fit(estado, target_f, epochs=1, verbose=0)
             
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
