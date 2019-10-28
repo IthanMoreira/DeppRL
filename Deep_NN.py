@@ -143,6 +143,7 @@ if __name__ == "__main__":
     es=[]
     rewardCum=0
     timer=0
+    timercum=0
     while len(agente.memory) < 5000:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -154,9 +155,11 @@ if __name__ == "__main__":
         state = next_state
         
         if done:
-                print(" score: ",rewardCum," time : ",timer)#                      
+                timercum=timer+timercum
+                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
                 rewardCum=0
+                timer=0
         timer=timer+1
 
 
