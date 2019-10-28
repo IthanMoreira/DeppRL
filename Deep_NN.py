@@ -186,6 +186,14 @@ if __name__ == "__main__":
             if len(agente.memory) >= batch_size:                
                 agente.entrenar(batch_size,agente.memory)
             time=time+1
+        if e%20==0:
+            plt.plot(times,recom) 
+            plt.show()               
+            plt.plot(es,recom)
+            plt.show()
+            plt.plot(es,times)
+            plt.show()           
+            
         sim.restartScenario()
         tim.sleep(1)
 
