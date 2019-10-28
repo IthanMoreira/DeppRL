@@ -22,7 +22,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=1, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.01, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         #self.descuento = descuento # Descuennto de la recompensa futura
         self.epsilon = epsilon # exploracion inicial
@@ -60,7 +60,7 @@ class Deep_NN:
         #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
         cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
         
-        cnn.compile(loss='sparse_categorical_crossentropy',
+        cnn.compile(loss='mse',
             optimizer=optimizers.Adam(lr=self.aprendizaje),
             metrics=['accuracy'])
         return cnn
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     sim.quedaAlgo()
     sim.objetoTomado()
     sim.restartScenario()    
-    print(agente.modelo.predict(est))
+    print(agente.modelo.predict(st))
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
@@ -137,14 +137,14 @@ if __name__ == "__main__":
 
     #agente.modelo.summary()
     done = False
-    batch_size = 128
+    batch_size = 5
     times=[]
     recom=[]
     es=[]
     rewardCum=0
     timer=0
     timercum=0
-    while len(agente.memory) < 5000:
+    while len(agente.memory) < 5:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
