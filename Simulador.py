@@ -79,7 +79,6 @@ class Simulador(object):
             errorCode1, handleJoint = vrep.simxGetObjectHandle(clientID,'m_Sphere' , vrep.simx_opmode_oneshot_wait)
             errorCode1, objeto = vrep.simxGetObjectHandle(clientID,'Cylinder' , vrep.simx_opmode_oneshot_wait)
             returnCode,home=vrep.simxGetObjectPosition(clientID,handleJoint,-1,vrep.simx_opmode_blocking)#deje estatico la primera posicion de target
-            home[2]=home[2]-0.2
             vrep.simxSetObjectPosition(clientID,handleJoint,-1,home,vrep.simx_opmode_oneshot)
             returnCode,obj=vrep.simxGetObjectPosition(clientID,objeto,-1,vrep.simx_opmode_blocking)
             vrep.simxSetObjectOrientation(clientID,handleJoint,-1,(0,math.pi,0),vrep.simx_opmode_oneshot)

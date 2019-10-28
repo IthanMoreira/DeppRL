@@ -22,9 +22,8 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, descuento=0.85, epsilon=0.01, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.1, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
-        #self.descuento = descuento # Descuennto de la recompensa futura
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
@@ -137,14 +136,14 @@ if __name__ == "__main__":
 
     #agente.modelo.summary()
     done = False
-    batch_size = 5
+    batch_size = 10
     times=[]
     recom=[]
     es=[]
     rewardCum=0
     timer=0
     timercum=0
-    while len(agente.memory) < 5:
+    while len(agente.memory) < 15:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
