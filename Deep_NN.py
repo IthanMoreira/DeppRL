@@ -142,15 +142,16 @@ if __name__ == "__main__":
     recom=[]
     es=[]
     rewardCum=0
-
+    timer=0
     while len(agente.memory) < 5000:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso        
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, rewardCum, next_state, done)              
         state = next_state
+        timer=timer+1
         if done:
-                print(" score: ",rewardCum," e : ",agente.epsilon)#                      
+                print(" score: ",rewardCum," time : ",timer)#                      
                 sim.restartScenario()
                 rewardCum=0
 
