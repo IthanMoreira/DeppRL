@@ -66,7 +66,9 @@ class Deep_NN:
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
 
-    
+    #def actualizarValueTarget(self):
+    #    self.modelo.set_weights(self.model.get_weights())
+    # end actualizarValueTarget
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
@@ -79,7 +81,7 @@ class Deep_NN:
         for estado, accion, recompensa, estado_siguiente, logrado in minibatch:
             #print(accion, " ", recompensa)
             target = recompensa
-            if not logrado or recompensa<-0.6:
+            if not logrado or recompensa<0:
                 target = (recompensa + self.gamma *
                           np.amax(self.modelo.predict(estado_siguiente)[0]))
             target_f = self.modelo.predict(estado)           
@@ -128,7 +130,7 @@ if __name__ == "__main__":
     sim.quedaAlgo()
     sim.objetoTomado()
     sim.restartScenario()    
-    print(agente.modelo.predict(st))
+    print(agente.modelo.predict(state))
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
@@ -147,10 +149,10 @@ if __name__ == "__main__":
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
-        if reward==-0.01 and timer<0.6:
+        if reward==-0.01 and timer>6:
                 reward=reward*(timer-6)
         rewardCum=reward+rewardCum
-        agente.experiencia(state, action, reward, next_state, done)              
+        agente.experiencia(state, action, np.sign(reward), next_state, done)              
         state = next_state
         
         if done:
@@ -173,7 +175,7 @@ if __name__ == "__main__":
             action = agente.decision(state)#int(input("accion = "))
                         
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            if reward==-0.01 and time<0.6:
+            if reward==-0.01 and time>6:
                 reward=reward*(time-6)
                        
             state = next_state
