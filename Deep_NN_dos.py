@@ -208,7 +208,7 @@ if __name__ == "__main__":
                        
             state = next_state
             rewardCum=reward+rewardCum
-            agente.experiencia(state, action, rewardCum, next_state, done)
+            agente.experiencia(state, action, np.sign(reward), next_state, done)
             if done:
                 
                 times.append(time)
