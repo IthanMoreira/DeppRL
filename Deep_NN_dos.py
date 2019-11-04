@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sep 28 15:09:29 2019
+Created on Sun Nov  3 14:51:19 2019
 
 @author: Ithan
 """
+
 import random
 import tensorflow as tf
 import numpy as np
@@ -42,7 +43,9 @@ class Deep_NN:
         self.filtrosConv3 = 32
         self.tamano_pool = (2, 2)
         self.episodios=10000
-        self.modelo=self.contruModelo()
+        self.funcion=self.contruModelo()
+        self.target=self.contruModelo()
+        self.actualizarTarget()
     
     def contruModelo (self):
         cnn = Sequential()
@@ -60,18 +63,17 @@ class Deep_NN:
         cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
         
         cnn.compile(loss='mse',
-            optimizer=optimizers.Adam(lr=self.aprendizaje))
+            optimizer=optimizers.Adam(lr=self.aprendizaje),
+            metrics=['accuracy'])
         return cnn
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
 
-    #def actualizarValueTarget(self):
-    #    self.modelo.set_weights(self.model.get_weights())
-    # end actualizarValueTarget
+
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
-        valores = self.modelo.predict(estado)
+        valores = self.funcion.predict(estado)
         #print (valores)
         return np.argmax(valores[0])  # accion random o mayor
        
@@ -89,32 +91,37 @@ class Deep_NN:
             recompensas.append(miniBatch[i][2])
             est_sig[i] = miniBatch[i][3]
             logrados.append(miniBatch[i][4])
-
-        target = self.modelo.predict(estados)
-        target_val = self.modelo.predict(est_sig)
-
+            
+        target=self.funcion.predict(estados)
+        target_val=self.target.predict(est_sig)
+        
+        
+        
         for x in range(batch_size):      
             if logrados[x]:
                 target[x][acciones[x]]=recompensas[x]
             else:
                 target[x][acciones[x]]= (recompensas[x] + self.gamma *
                           np.amax(target_val[x]))
-
-        # and do the model fit!
-        self.modelo.fit(estados, target,
-                       epochs=1, verbose=0)
+                    
+        self.funcion.fit(estados,target,
+                                    epochs=1,verbose=0)
         
-        #fit_generator([estados,target], epochs=1,verbose=0)
+
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+    
+        
 
     def cargar_modelo(self, name):
         self.modelo.load_weights(name)
 
     def guardar_modelo(self, name):
         self.modelo.save_weights(name)
-    ##def actualizar (self):
-     #   self.modelo.set_weights(self.modelo.get_weights())
+        
+    def actualizarTarget(self):
+        self.target.set_weights(self.funcion.get_weights())
+    
 if __name__ == "__main__":
     
   
@@ -155,14 +162,16 @@ if __name__ == "__main__":
 
     #agente.modelo.summary()
     done = False
-    batch_size = 128
+    batch_size = 500
     times=[]
     recom=[]
     es=[]
     rewardCum=0
     timer=0
     timercum=0
+    act=0
     while len(agente.memory) < 500:
+        act=act+1
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -179,8 +188,9 @@ if __name__ == "__main__":
                 rewardCum=0
                 timer=0
         timer=timer+1
-    
-    
+        
+   
+
     for e in range(agente.episodios):
         
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -189,6 +199,7 @@ if __name__ == "__main__":
         
         while True:
             #print(time)
+            act=act+1
             action = agente.decision(state)#int(input("accion = "))
                         
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -210,6 +221,8 @@ if __name__ == "__main__":
         
             if len(agente.memory) >= batch_size:
                 agente.entrenar(batch_size,agente.memory)
+            if act%1000==0:
+                agente.actualizarTarget()
                 
             time=time+1
         if e%20==0:
