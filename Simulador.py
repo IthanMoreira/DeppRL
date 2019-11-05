@@ -274,6 +274,8 @@ class Simulador(object):
                         bandera=False
         
         
+            else: 
+                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
         
                 
         #end of orientationTarget method
