@@ -57,7 +57,7 @@ class Deep_NN:
         
         cnn.add(Flatten())
         #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
-        cnn.add(Dense(self.cantidad_acciones, activation='sigmoid'))#tanh
+        cnn.add(Dense(self.cantidad_acciones, activation='tanh'))#tanh
         
         cnn.compile(loss='mse',
             optimizer=optimizers.Adam(lr=self.aprendizaje))
@@ -65,9 +65,6 @@ class Deep_NN:
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
 
-    #def actualizarValueTarget(self):
-    #    self.modelo.set_weights(self.model.get_weights())
-    # end actualizarValueTarget
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
@@ -192,8 +189,8 @@ if __name__ == "__main__":
             action = agente.decision(state)#int(input("accion = "))
                         
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            if reward==-0.01 and time>6:
-                reward=reward*(time-6)
+            #if reward==-0.01 and time>6:
+            #    reward=reward*(time-6)
                        
             state = next_state
             rewardCum=reward+rewardCum
