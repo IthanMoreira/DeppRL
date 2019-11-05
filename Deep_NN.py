@@ -57,7 +57,7 @@ class Deep_NN:
         
         cnn.add(Flatten())
         #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
-        cnn.add(Dense(self.cantidad_acciones, activation='softmax'))
+        cnn.add(Dense(self.cantidad_acciones, activation='sigmoid'))#tanh
         
         cnn.compile(loss='mse',
             optimizer=optimizers.Adam(lr=self.aprendizaje))
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         if reward==-0.01 and timer>6:
                 reward=reward*(timer-6)
         rewardCum=reward+rewardCum
-        agente.experiencia(state, action, np.sign(reward), next_state, done)              
+        agente.experiencia(state, action, reward, next_state, done)              
         state = next_state
         
         if done:
@@ -197,7 +197,7 @@ if __name__ == "__main__":
                        
             state = next_state
             rewardCum=reward+rewardCum
-            agente.experiencia(state, action, np.sign(reward), next_state, done)
+            agente.experiencia(state, action, reward, next_state, done)
             if done:
                 
                 times.append(time)

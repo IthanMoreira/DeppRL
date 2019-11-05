@@ -385,9 +385,9 @@ class Simulador(object):
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
         
         rpp=1
-        rp=1
+        rp=0
         rm=-1
-        rn=-0.01
+        rn=0
         retornaA=self.kinectVisionRGB()
         if errorCode==vrep.simx_error_noerror:
             
