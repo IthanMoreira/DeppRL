@@ -207,12 +207,12 @@ class Simulador(object):
             
                 
     def tomarObjeto(self, moveTarget):
+        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
         if (len(self.porTomar)!=0):
             obj=random.choice(self.porTomar)
             bandera=True
             if obj!=self.objTomado:
                 if self.objTomado!=0:
-                    errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
                     vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
                     time.sleep(1)
                     inputBuffer=bytearray()    
