@@ -208,7 +208,7 @@ class Simulador(object):
                 
     def tomarObjeto(self, moveTarget):
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
-        if (len(self.porTomar)!=0):
+        if (len(self.porTomar)!=0 and self.objTomado==0):
             obj=random.choice(self.porTomar)
             bandera=True
             if obj!=self.objTomado:
@@ -225,9 +225,7 @@ class Simulador(object):
                                                                                                [],
                                                                                                inputBuffer,
                                                                                                vrep.simx_opmode_blocking)
-                    
-                
-                    
+
                 while bandera==True:
                     if self.enMesa(obj):
                         
@@ -271,11 +269,11 @@ class Simulador(object):
                         if (len(self.porTomar)!=0):
                             obj=random.choice(self.porTomar)
                             self.objetoTomado()
-                        bandera=False
+                        
         
         
-            else: 
-                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
+        else: 
+            vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
         
                 
         #end of orientationTarget method
