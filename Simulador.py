@@ -252,7 +252,7 @@ class Simulador(object):
                         
         else: 
             vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
-            
+            self.objetoTomado()
                 
         #end of orientationTarget method
         
@@ -387,10 +387,8 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    if not self.quedaAlgo():
-                        retornaA,retornaB,retornaC=retornaA,rm,True
-                    else:
-                        retornaA,retornaB,retornaC=retornaA,rm,False
+                    retornaA,retornaB,retornaC=retornaA,rm,True
+                    
 
             elif((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
 
@@ -412,10 +410,8 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        if not self.quedaAlgo():
-                            retornaA,retornaB,retornaC=retornaA,rm,True
-                        else:
-                            retornaA,retornaB,retornaC=retornaA,rm,False
+                        
+                        retornaA,retornaB,retornaC=retornaA,rm,True
                         
             else:
                 if not self.quedaAlgo():
