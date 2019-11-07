@@ -230,7 +230,10 @@ class Simulador(object):
                                 returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
                             bandera=False
                             
-                    else: 
+                    elif(len(self.porTomar)!=0):
+                        obj=random.choice(self.porTomar)
+                        bandera=True
+                    else:
                         bandera=False
                         
         else: 
