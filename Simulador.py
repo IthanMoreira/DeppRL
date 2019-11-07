@@ -207,16 +207,34 @@ class Simulador(object):
             
                 
     def tomarObjeto(self, moveTarget):
+        self.mesa=0
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
         if (len(self.porTomar)!=0 and self.objTomado==0):
             obj=random.choice(self.porTomar)
             bandera=True
-            if obj!=self.objTomado:
-                if self.objTomado!=0:
-                    vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
-                    time.sleep(1)
-                    inputBuffer=bytearray()    
-                    res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
+            while bandera==True:
+                if self.enMesa(obj):
+                    self.objTomado=obj
+                    errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
+            
+                    if errorCode1==vrep.simx_error_noerror :
+                        returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+                        returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
+                        self.ultimaPosObj=positionObj1
+                        n=(positionObj1[0],positionObj1[1],positionTar[2])
+                        
+                        aux=(positionObj1[2]+0.05)
+                        
+                        if obj == self.obj5Id or obj == self.obj6Id:
+                            aux=(positionObj1[2]+0.01)
+                            
+                        while round(positionTar[2],3)>=round(aux,3): 
+                            n=(positionObj1[0],positionObj1[1],positionTar[2]-0.002)
+                            vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
+                            returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
+            
+                        inputBuffer=bytearray()
+                        res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
                                                                                                'suctionPad',
                                                                                                vrep.sim_scripttype_childscript,
                                                                                                'sysCall_cleanup',
@@ -225,53 +243,13 @@ class Simulador(object):
                                                                                                [],
                                                                                                inputBuffer,
                                                                                                vrep.simx_opmode_blocking)
-
-                while bandera==True:
-                    if self.enMesa(obj):
-                        
-                        self.objTomado=obj
-                        errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
-                
-                        if errorCode1==vrep.simx_error_noerror :
+                      
+                        while round(positionTar[2],2)<=round((self.home[2]),2): 
+                            n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
+                            vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
                             returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-                            returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-                            self.ultimaPosObj=positionObj1
-                            n=(positionObj1[0],positionObj1[1],positionTar[2])
-                            
-                            aux=(positionObj1[2]+0.05)
-                            
-                            if obj == self.obj5Id or obj == self.obj6Id:
-                                aux=(positionObj1[2]+0.01)
-                                
-                            while round(positionTar[2],3)>=round(aux,3): 
-                                n=(positionObj1[0],positionObj1[1],positionTar[2]-0.002)
-                                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
-                                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-                
-                            inputBuffer=bytearray()
-                            res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(self.clientID,
-                                                                                                   'suctionPad',
-                                                                                                   vrep.sim_scripttype_childscript,
-                                                                                                   'sysCall_cleanup',
-                                                                                                   [],
-                                                                                                   [],
-                                                                                                   [],
-                                                                                                   inputBuffer,
-                                                                                                   vrep.simx_opmode_blocking)
-                          
-                            while round(positionTar[2],2)<=round((self.home[2]),2): 
-                                n=(positionObj1[0],positionObj1[1],positionTar[2]+0.005)
-                                vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
-                                returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
-                            bandera=False
-                            self.objetoTomado()
-                    else:
-                        if (len(self.porTomar)!=0):
-                            obj=random.choice(self.porTomar)
-                            self.objetoTomado()
+                        bandera=False
                         
-        
-        
         else: 
             vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,[self.ultimaPosObj[0],self.ultimaPosObj[1],self.home[2]],vrep.simx_opmode_oneshot)
             self.objetoTomado()
@@ -409,7 +387,8 @@ class Simulador(object):
                     self.cont = self.cont+1
                     self.porTomar.remove(self.objTomado)
                     self.objTomado=0
-                    retornaA,retornaB,retornaC= retornaA,rm,True
+                    retornaA,retornaB,retornaC=retornaA,rm,True
+                    
 
             elif((positionMesaDer[0]-0.15)<=positionObj1[0] and (positionMesaDer[0]+0.15)>=positionObj1[0] and (positionMesaDer[1]-0.15)<=positionObj1[1] and (positionMesaDer[1]+0.15)>=positionObj1[1] and (positionMesaDer[2]+0.15)>=positionObj1[2]  ):
 
@@ -431,7 +410,9 @@ class Simulador(object):
                         self.cont = self.cont+1
                         self.porTomar.remove(self.objTomado)
                         self.objTomado=0
-                        retornaA,retornaB,retornaC= retornaA,rm,True
+                        
+                        retornaA,retornaB,retornaC=retornaA,rm,True
+                        
             else:
                 if not self.quedaAlgo():
                     retornaA,retornaB,retornaC= retornaA,rn,True
@@ -439,7 +420,7 @@ class Simulador(object):
                     retornaA,retornaB,retornaC= retornaA,rn,False                           
 
                     
-                #print ('no entre mesa Der') 
+            #print ('no entre mesa Der') 
             #print(self.quedaAlgo())
             #print(retornaA,retornaB,retornaC)
             return retornaA,retornaB,retornaC #imagen,reward,done
