@@ -332,6 +332,10 @@ class Simulador(object):
         rn=-0.001
         retornaA=self.kinectVisionRGB()
         
+        for obj in self.porTomar:
+            if obj != self.objTomado:
+                self.enMesa(obj)
+        
         if errorCode==vrep.simx_error_noerror:
             
             if((positionMesaIzq[0]-0.15)<=positionObj1[0] and (positionMesaIzq[0]+0.15)>=positionObj1[0] and (positionMesaIzq[1]-0.15)<=positionObj1[1] and (positionMesaIzq[1]+0.15)>=positionObj1[1] and (positionMesaIzq[2]+0.15)>=positionObj1[2] ):   

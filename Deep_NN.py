@@ -22,7 +22,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.1, epsilon=1, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.05, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
@@ -56,11 +56,11 @@ class Deep_NN:
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
         
         cnn.add(Flatten())
+        cnn.add(Dense(256,activation='relu'))
         #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
-        cnn.add(Dense(self.cantidad_acciones, activation='tanh'))#tanh
+        cnn.add(Dense(self.cantidad_acciones, activation='softmax'))#tanh
         
-        cnn.compile(loss='mse',
-            optimizer=optimizers.Adam(lr=self.aprendizaje))
+        cnn.compile(loss='mse', optimizer=optimizers.RMSprop(lr=self.aprendizaje, rho=0.95, epsilon=0.01))
         return cnn
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
@@ -152,14 +152,14 @@ if __name__ == "__main__":
 
     #agente.modelo.summary()
     done = False
-    batch_size = 128
+    batch_size = 32
     times=[]
     recom=[]
     es=[]
     rewardCum=0
     timer=0
     timercum=0
-    while len(agente.memory) < 500:
+    while len(agente.memory) < 128:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -175,6 +175,8 @@ if __name__ == "__main__":
                 sim.restartScenario()
                 rewardCum=0
                 timer=0
+                if len(agente.memory) >= batch_size:
+                    agente.entrenar(batch_size,agente.memory)
         timer=timer+1
     
     
@@ -191,25 +193,28 @@ if __name__ == "__main__":
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             #if reward==-0.01 and time>6:
             #    reward=reward*(time-6)
-                       
+            agente.experiencia(state, action, reward, next_state, done)          
+            
             state = next_state
             rewardCum=reward+rewardCum
-            agente.experiencia(state, action, reward, next_state, done)
+            
             if done:
                 
                 times.append(time)
                 recom.append(rewardCum)
                 es.append(e)
                 print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)# 
-                                                 
+                
+                if len(agente.memory) >= batch_size:
+                    agente.entrenar(batch_size,agente.memory)     
+                            
                 break
               
         
-            if len(agente.memory) >= batch_size:
-                agente.entrenar(batch_size,agente.memory)
+           
                 
             time=time+1
-        if e%20==0:
+        if e%10==0:
             #plt.plot(times,recom) 
             #plt.show()               
             plt.plot(es,recom)
