@@ -177,11 +177,11 @@ class Simulador(object):
         for obj in self.porTomar:
             returnCode,posObj=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
             if ((posTarget[0]-0.2)<=posObj[0] and (posTarget[0]+0.2)>=posObj[0] and (posTarget[1]-0.2)<=posObj[1] and (posTarget[1]+0.2)>=posObj[1] and (posTarget[2]-0.2)<=posObj[2] and (posTarget[2]+0.2)>=posObj[2]):
-                print ("objeto tomado bn")
+                #print ("objeto tomado bn")
                 self.objTomado=obj
                 break
             else: 
-                print ("objeto tomado 0")
+                #print ("objeto tomado 0")
                 self.objTomado=0
     #end of objetoTomado method
             
