@@ -56,7 +56,7 @@ class Deep_NN:
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
         
         cnn.add(Flatten())
-        cnn.add(Dense(256,activation='relu'))
+        cnn.add(Dense(16,activation='relu'))
         #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
         cnn.add(Dense(self.cantidad_acciones, activation='softmax'))#tanh
         
@@ -152,14 +152,14 @@ if __name__ == "__main__":
 
     #agente.modelo.summary()
     done = False
-    batch_size = 32
+    batch_size = 64
     times=[]
     recom=[]
     es=[]
     rewardCum=0
     timer=0
     timercum=0
-    while len(agente.memory) < 128:
+    while len(agente.memory) < 500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -175,8 +175,6 @@ if __name__ == "__main__":
                 sim.restartScenario()
                 rewardCum=0
                 timer=0
-                if len(agente.memory) >= batch_size:
-                    agente.entrenar(batch_size,agente.memory)
         timer=timer+1
     
     
