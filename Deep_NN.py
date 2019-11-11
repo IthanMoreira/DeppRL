@@ -22,7 +22,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.05, epsilon=1, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.01, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
@@ -58,9 +58,9 @@ class Deep_NN:
         cnn.add(Flatten())
         cnn.add(Dense(16,activation='relu'))
         #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
-        cnn.add(Dense(self.cantidad_acciones, activation='softmax'))#tanh
+        cnn.add(Dense(self.cantidad_acciones))#tanh
         
-        cnn.compile(loss='mse', optimizer=optimizers.RMSprop(lr=self.aprendizaje, rho=0.95, epsilon=0.01))
+        cnn.compile(loss='mse', optimizer=optimizers.RMSprop(lr=self.aprendizaje))
         return cnn
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
@@ -74,7 +74,7 @@ class Deep_NN:
        
     def entrenar(self, batch_size, memo):
         miniBatch = random.sample(self.memory, batch_size)#con lo guardado se entrena la red con experiencias random
-
+        #miniBatch = random.sample(agente.memory, batch_size)
         estados = np.zeros((batch_size, 64, 128, 3))
 
         est_sig = np.zeros((batch_size, 64, 128, 3))
@@ -88,15 +88,17 @@ class Deep_NN:
             logrados.append(miniBatch[i][4])
 
         target = self.modelo.predict(estados)
+        #target = agente.modelo.predict(estados)
         target_val = self.modelo.predict(est_sig)
-
+        #target_val = agente.modelo.predict(est_sig)
         for x in range(batch_size):      
             if logrados[x]:
                 target[x][acciones[x]]=recompensas[x]
+                #target[2][acciones[0]]=recompensas[0]
             else:
                 target[x][acciones[x]]= (recompensas[x] + self.gamma *
                           np.amax(target_val[x]))
-
+                #target[x][acciones[x]]= (recompensas[x] + agente.gamma *np.amax(target_val[x]))
         # and do the model fit!
         self.modelo.fit(estados, target,
                        epochs=1, verbose=0)
@@ -231,6 +233,17 @@ if __name__ == "__main__":
     plt.plot(es,times)
     plt.show()           
     
+    
+    """
+    
+    next_state, reward, done= sim.seleccion(1) # segun la accion retorna desde el entorno todo eso    
+    tar=agente.modelo.predict(next_state)
+    tar[0][0]=1
+    tar[0][1]=1
+    tar[0][2]=1
+    tar[0][3]=1
+    for x in range(1000):
+        agente.modelo.fit(next_state,tar,epochs=1, verbose=0)"""
         # if e % 10 == 0:
         #     agent.save("./save/cartpole-dqn.h5")
 #agente.guardar_modelo("uno")
