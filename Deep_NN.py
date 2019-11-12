@@ -29,7 +29,7 @@ class Deep_NN:
         self.epsilon_decay = 0.995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=1000000)
+        self.memory = deque(maxlen=3000)
         #self.buenos_recuerdos = deque(maxlen=2000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles  
         self.longitud=64
@@ -42,7 +42,7 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=10000
+        self.episodios=110
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
@@ -58,7 +58,7 @@ class Deep_NN:
         
         cnn.add(Flatten())
         #cnn.add(Dense(16,activation='relu'))
-        cnn.add(Dense(512, activation='relu'))#sigmoidal--- lineal
+        cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
         cnn.add(Dense(self.cantidad_acciones,activation='softmax'))#tanh
         
         cnn.compile(loss='mse', optimizer=optimizers.RMSprop(lr=self.aprendizaje))
@@ -105,8 +105,8 @@ class Deep_NN:
                        epochs=1, verbose=0)
         
         #fit_generator([estados,target], epochs=1,verbose=0)
-        #if self.epsilon > self.epsilon_min:
-        #    self.epsilon *= self.epsilon_decay
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon_decay
 
     def cargar_modelo(self, name):
         self.modelo.load_weights(name)
@@ -222,8 +222,8 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()           
-        if agente.epsilon > agente.epsilon_min:
-            agente.epsilon *= agente.epsilon_decay    
+        #if agente.epsilon > agente.epsilon_min:
+        #    agente.epsilon *= agente.epsilon_decay    
         sim.restartScenario()
         tim.sleep(1)
 
