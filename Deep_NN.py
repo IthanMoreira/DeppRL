@@ -22,7 +22,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.01, epsilon=1, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.001, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
@@ -31,15 +31,16 @@ class Deep_NN:
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=1000000)
         #self.buenos_recuerdos = deque(maxlen=2000)
-        self.cantidad_acciones = cantidad_acciones # numero de acciones posibles        
+        self.cantidad_acciones = cantidad_acciones # numero de acciones posibles  
+        self.longitud=64
+        self.altura = 64
         self.tamano_filtro1 = (8, 8)
         self.tamano_filtro2 = (4, 4)
         self.tamano_filtro3 = (2, 2)
-        self.longitud=128
-        self.altura = 64
-        self.filtrosConv1 = 8
-        self.filtrosConv2 = 16
-        self.filtrosConv3 = 32
+        
+        self.filtrosConv1 = 4
+        self.filtrosConv2 = 8
+        self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
         self.episodios=10000
         self.modelo=self.contruModelo()
@@ -56,9 +57,9 @@ class Deep_NN:
         cnn.add(MaxPooling2D(pool_size=self.tamano_pool))
         
         cnn.add(Flatten())
-        cnn.add(Dense(16,activation='relu'))
-        #cnn.add(Dense(256, activation='relu'))#sigmoidal--- lineal
-        cnn.add(Dense(self.cantidad_acciones))#tanh
+        #cnn.add(Dense(16,activation='relu'))
+        cnn.add(Dense(512, activation='relu'))#sigmoidal--- lineal
+        cnn.add(Dense(self.cantidad_acciones,activation='softmax'))#tanh
         
         cnn.compile(loss='mse', optimizer=optimizers.RMSprop(lr=self.aprendizaje))
         return cnn
@@ -75,9 +76,9 @@ class Deep_NN:
     def entrenar(self, batch_size, memo):
         miniBatch = random.sample(self.memory, batch_size)#con lo guardado se entrena la red con experiencias random
         #miniBatch = random.sample(agente.memory, batch_size)
-        estados = np.zeros((batch_size, 64, 128, 3))
+        estados = np.zeros((batch_size, 64, 64, 3))
 
-        est_sig = np.zeros((batch_size, 64, 128, 3))
+        est_sig = np.zeros((batch_size, 64, 64, 3))
         acciones, recompensas, logrados = [], [], []
 
         for i in range(batch_size):
@@ -104,8 +105,8 @@ class Deep_NN:
                        epochs=1, verbose=0)
         
         #fit_generator([estados,target], epochs=1,verbose=0)
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+        #if self.epsilon > self.epsilon_min:
+        #    self.epsilon *= self.epsilon_decay
 
     def cargar_modelo(self, name):
         self.modelo.load_weights(name)
@@ -154,7 +155,7 @@ if __name__ == "__main__":
 
     #agente.modelo.summary()
     done = False
-    batch_size = 64
+    batch_size = 128
     times=[]
     recom=[]
     es=[]
@@ -221,7 +222,8 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()           
-            
+        if agente.epsilon > agente.epsilon_min:
+            agente.epsilon *= agente.epsilon_decay    
         sim.restartScenario()
         tim.sleep(1)
 
@@ -236,12 +238,12 @@ if __name__ == "__main__":
     
     """
     
-    next_state, reward, done= sim.seleccion(1) # segun la accion retorna desde el entorno todo eso    
+    next_state, reward, done= sim.seleccion(0) # segun la accion retorna desde el entorno todo eso    
     tar=agente.modelo.predict(next_state)
-    tar[0][0]=1
+    tar[0][0]=0
     tar[0][1]=1
-    tar[0][2]=1
-    tar[0][3]=1
+    tar[0][2]=0
+    tar[0][3]=0
     for x in range(1000):
         agente.modelo.fit(next_state,tar,epochs=1, verbose=0)"""
         # if e % 10 == 0:

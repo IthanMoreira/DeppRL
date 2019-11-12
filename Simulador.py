@@ -293,6 +293,9 @@ class Simulador(object):
             imgRgb=np.fliplr(imgRgb)
             
             
+            #imgRgb = imgRgb.astype('float64')
+            imgRgb = imgRgb/255.0
+            
             #plt.imshow(imgRgb)
             #plt.show()
             #print(imgRgb)
@@ -330,9 +333,9 @@ class Simulador(object):
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
         
         rpp=1
-        rp=1
-        rm=-1
-        rn=-0.001
+        rp=0
+        rm=0
+        rn=0
         retornaA=self.kinectVisionRGB()
         
         for obj in self.porTomar:
