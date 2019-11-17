@@ -23,8 +23,8 @@ class Simulador(object):
         self.posObj5,self.obj5Id=self.obtenerPos('Disc0')
         self.posObj6,self.obj6Id=self.obtenerPos('Disc1')
         
-        self.objetos = [self.obj1Id,self.obj2Id] #,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
-        self.posicionIni= [ self.posObj1, self.posObj2] #, self.posObj3, self.posObj4, self.posObj5, self.posObj6]
+        self.objetos = [self.obj1Id,self.obj2Id,self.obj3Id ,self.obj4Id ,self.obj5Id ,self.obj6Id]
+        self.posicionIni= [ self.posObj1, self.posObj2, self.posObj3, self.posObj4, self.posObj5, self.posObj6]
         returnCode,self.oriObj3=vrep.simxGetObjectOrientation(self.clientID,self.obj4Id,-1,vrep.simx_opmode_blocking)
         
         self.cont=0                                                #contador de posiciones iniciales fuera de la mesa 
@@ -114,7 +114,6 @@ class Simulador(object):
             posiciones=[pos1,pos2,pos3,pos4,pos5,pos6,pos7,pos8,pos9]
             
             for obj in self.objetos:
-                if obj == self.obj1Id or obj == self.obj2Id:
                     aux=random.choice(posiciones)
                     vrep.simxSetObjectPosition(self.clientID,obj,-1,aux,vrep.simx_opmode_oneshot)
                     posiciones.remove(aux)                   
@@ -333,7 +332,7 @@ class Simulador(object):
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
         
         rpp=1
-        rp=0
+        rp=1
         rm=0
         rn=0
         retornaA=self.kinectVisionRGB()

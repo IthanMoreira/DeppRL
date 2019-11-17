@@ -29,7 +29,7 @@ class Deep_NN:
         self.epsilon_decay = 0.995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
-        self.memory = deque(maxlen=3000)
+        self.memory = deque(maxlen=20000)
         #self.buenos_recuerdos = deque(maxlen=2000)
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles  
         self.longitud=64
@@ -42,7 +42,7 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=110
+        self.episodios=10000
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
@@ -102,8 +102,7 @@ class Deep_NN:
                 #target[x][acciones[x]]= (recompensas[x] + agente.gamma *np.amax(target_val[x]))
         # and do the model fit!
         self.modelo.fit(estados, target,
-                       epochs=1, verbose=0)
-        
+                       epochs=1, verbose=0)        
         #fit_generator([estados,target], epochs=1,verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
@@ -151,7 +150,7 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-    #agente.cargar_modelo("uno")
+    #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
 
     #agente.modelo.summary()
     done = False
@@ -166,19 +165,22 @@ if __name__ == "__main__":
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
-        if reward==-0.01 and timer>6:
-                reward=reward*(timer-6)
+        #if reward==-0.01 and timer>6:
+        #        reward=reward*(timer-6)
+        
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, reward, next_state, done)              
         state = next_state
         
-        if done:
+        if done or timer>250:
                 timercum=timer+timercum
                 print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
                 rewardCum=0
                 timer=0
         timer=timer+1
+    
+    timercum=0
     
     
     for e in range(agente.episodios):
@@ -188,7 +190,7 @@ if __name__ == "__main__":
         time=0
         
         while True:
-            #print(time)
+            
             action = agente.decision(state)#int(input("accion = "))
                         
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -197,33 +199,29 @@ if __name__ == "__main__":
             agente.experiencia(state, action, reward, next_state, done)          
             
             state = next_state
+            
             rewardCum=reward+rewardCum
             
-            if done:
-                
+            if done or time>250:
+                timercum=time+timercum
                 times.append(time)
                 recom.append(rewardCum)
                 es.append(e)
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time)# 
-                
-                if len(agente.memory) >= batch_size:
-                    agente.entrenar(batch_size,agente.memory)     
-                            
+                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
                 break
-              
-        
-           
                 
+            if len(agente.memory) >= batch_size:
+                agente.entrenar(batch_size,agente.memory)     
+                            
             time=time+1
-        if e%10==0:
-            #plt.plot(times,recom) 
-            #plt.show()               
+        if e%10==0 and e>9:
+                 
             plt.plot(es,recom)
             plt.show()
             plt.plot(es,times)
-            plt.show()           
-        #if agente.epsilon > agente.epsilon_min:
-        #    agente.epsilon *= agente.epsilon_decay    
+            plt.show()
+        if recom[len(recom)-50:].count(6)>=49:
+            break
         sim.restartScenario()
         tim.sleep(1)
 
@@ -235,18 +233,45 @@ if __name__ == "__main__":
     plt.plot(es,times)
     plt.show()           
     
+  
+"""
     
-    """
-    
-    next_state, reward, done= sim.seleccion(0) # segun la accion retorna desde el entorno todo eso    
+    next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
     tar=agente.modelo.predict(next_state)
     tar[0][0]=0
     tar[0][1]=1
     tar[0][2]=0
     tar[0][3]=0
     for x in range(1000):
-        agente.modelo.fit(next_state,tar,epochs=1, verbose=0)"""
-        # if e % 10 == 0:
-        #     agent.save("./save/cartpole-dqn.h5")
-#agente.guardar_modelo("uno")
-#agente.cargar_modelo("uno")
+        his=agente.modelo.fit(next_state,tar,epochs=1, verbose=0)
+    
+    type(his)
+    plt.figure(0)  
+    plt.plot(his.history['acc'],'r')  
+    plt.plot(his.history['val_acc'],'g')  
+    plt.xticks(np.arange(0, 11, 2.0))  
+    plt.rcParams['figure.figsize'] = (8, 6)  
+    plt.xlabel("Numero de Epocas")  
+    plt.ylabel("Precisión")  
+    plt.title("Precisión de entrenamiento vs Precisión de Validación")  
+    plt.legend(['entrenamiento','Validación'])
+    
+    """
+         #if e % 10 == 0:
+          #   agent.save("./save/cartpole-dqn.h5")
+        #agente.guardar_modelo("6 figuras 30 buenos")
+    #agente.cargar_modelo("uno")
+"""     
+        time=0
+        e=1
+        ee=0.995
+        while True:
+            time=time+1
+            if e > 0.01:
+                e *= ee
+            else:
+                print(time)
+                break
+                
+
+"""     
