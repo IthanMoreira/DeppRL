@@ -10,7 +10,7 @@ import numpy as np
 import time as tim
 from Simulador import Simulador as simu 
 from tensorflow.python.keras import optimizers
-from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.models import Sequential, load_model
 from tensorflow.python.keras.layers import Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
@@ -108,10 +108,12 @@ class Deep_NN:
             self.epsilon *= self.epsilon_decay
 
     def cargar_modelo(self, name):
-        self.modelo.load_weights(name)
+        self.modelo=load_model('modelo_'+name)
+        self.modelo.load_weights('pesos_'+name)
 
     def guardar_modelo(self, name):
-        self.modelo.save_weights(name)
+        self.modelo.save_weights('pesos_'+name)
+        self.modelo.save('modelo_'+name)
     ##def actualizar (self):
      #   self.modelo.set_weights(self.modelo.get_weights())
 if __name__ == "__main__":
@@ -220,7 +222,7 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if recom[len(recom)-50:].count(6)>=49:
+        if recom[len(recom)-50:].count(6)>=50:
             break
         sim.restartScenario()
         tim.sleep(1)
