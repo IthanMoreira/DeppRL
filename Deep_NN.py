@@ -26,7 +26,7 @@ class Deep_NN:
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.9995
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=20000)
@@ -163,18 +163,20 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    while len(agente.memory) < 500:
+    while len(agente.memory) <1000:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
-        #if reward==-0.01 and timer>6:
-        #        reward=reward*(timer-6)
+        if reward==-0.01 and timer>18:
+            reward=reward*(timer-18)
+        else:
+            reward=0
         
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, reward, next_state, done)              
         state = next_state
         
-        if done or timer>250:
+        if done or timer>200:
                 timercum=timer+timercum
                 print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
@@ -184,7 +186,7 @@ if __name__ == "__main__":
     
     timercum=0
     
-    
+    #max 3.52
     for e in range(agente.episodios):
         
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -196,15 +198,17 @@ if __name__ == "__main__":
             action = agente.decision(state)#int(input("accion = "))
                         
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            #if reward==-0.01 and time>6:
-            #    reward=reward*(time-6)
+            if reward==-0.01 and time>18:
+                reward=reward*(time-18)
+            else:
+                reward=0
             agente.experiencia(state, action, reward, next_state, done)          
             
             state = next_state
             
             rewardCum=reward+rewardCum
             
-            if done or time>250:
+            if done or time>200:
                 timercum=time+timercum
                 times.append(time)
                 recom.append(rewardCum)
@@ -222,7 +226,7 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if recom[len(recom)-50:].count(6)>=50:
+        if recom[len(recom)-50:].count(1)>=50:
             break
         sim.restartScenario()
         tim.sleep(1)
@@ -234,7 +238,7 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    
+    agente.guardar_modelo("6 figuras 50 buenos-1")
   
 """
     
@@ -266,7 +270,7 @@ if __name__ == "__main__":
 """     
         time=0
         e=1
-        ee=0.995
+        ee=0.9995
         while True:
             time=time+1
             if e > 0.01:

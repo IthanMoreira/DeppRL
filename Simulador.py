@@ -331,10 +331,10 @@ class Simulador(object):
         returnCode,positionMesaIzq=vrep.simxGetObjectPosition(self.clientID,mesaIzq,-1,vrep.simx_opmode_blocking)  
         returnCode,positionMesaDer=vrep.simxGetObjectPosition(self.clientID,mesaDer,-1,vrep.simx_opmode_blocking)
         
-        rpp=6
-        rp=1
-        rm=0
-        rn=0
+        rpp=1
+        rp=0.53
+        rm=-1
+        rn=-0.01
         retornaA=self.kinectVisionRGB()
         
         for obj in self.porTomar:
