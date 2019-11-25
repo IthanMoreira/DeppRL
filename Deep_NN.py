@@ -70,7 +70,9 @@ class Deep_NN:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
-        #print (valores)
+
+        print (valores)
+        print (np.argmax(valores[0]))
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size, memo):
@@ -152,7 +154,8 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-    #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
+    #agente.cargar_modelo("6 figuras javier")
+    #agente.epsilon=0
 
     #agente.modelo.summary()
     done = False
@@ -261,7 +264,7 @@ if __name__ == "__main__":
     """
          #if e % 10 == 0:
           #   agent.save("./save/cartpole-dqn.h5")
-        #agente.guardar_modelo("6 figuras 30 buenos")
+        #agente.guardar_modelo("6 figuras javier")
     #agente.cargar_modelo("uno")
 """     
         time=0
