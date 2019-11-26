@@ -4,6 +4,7 @@ Created on Sat Sep 28 15:09:29 2019
 
 @author: Ithan
 """
+import pandas as pd
 import random
 import tensorflow as tf
 import numpy as np
@@ -70,7 +71,9 @@ class Deep_NN:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
-        #print (valores)
+
+        print (valores)
+        print (np.argmax(valores[0]))
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size, memo):
@@ -112,8 +115,9 @@ class Deep_NN:
         self.modelo.load_weights('pesos_'+name)
 
     def guardar_modelo(self, name):
-        self.modelo.save_weights('pesos_'+name)
         self.modelo.save('modelo_'+name)
+        self.modelo.save_weights('pesos_'+name)
+        
     ##def actualizar (self):
      #   self.modelo.set_weights(self.modelo.get_weights())
 if __name__ == "__main__":
@@ -152,7 +156,12 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-    #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
+<<<<<<< HEAD
+    #agente.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+=======
+    #agente.cargar_modelo("6 figuras javier")
+    #agente.epsilon=0
+>>>>>>> 8113cee40d93464c7b1d1c2d0ace2c69118a084e
 
     #agente.modelo.summary()
     done = False
@@ -169,14 +178,14 @@ if __name__ == "__main__":
         
         if reward==-0.01 and timer>18:
             reward=reward*(timer-18)
-        else:
+        elif reward==-0.01:
             reward=0
         
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, reward, next_state, done)              
         state = next_state
         
-        if done or timer>200:
+        if done or timer>100:
                 timercum=timer+timercum
                 print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
@@ -186,7 +195,7 @@ if __name__ == "__main__":
     
     timercum=0
     
-    #max 3.52
+    
     for e in range(agente.episodios):
         
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -200,7 +209,7 @@ if __name__ == "__main__":
             next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             if reward==-0.01 and time>18:
                 reward=reward*(time-18)
-            else:
+            elif reward==-0.01:
                 reward=0
             agente.experiencia(state, action, reward, next_state, done)          
             
@@ -208,7 +217,7 @@ if __name__ == "__main__":
             
             rewardCum=reward+rewardCum
             
-            if done or time>200:
+            if done or time>100:
                 timercum=time+timercum
                 times.append(time)
                 recom.append(rewardCum)
@@ -226,7 +235,7 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if recom[len(recom)-50:].count(1)>=50:
+        if recom[len(recom)-50:].count(3)>=50:
             break
         sim.restartScenario()
         tim.sleep(1)
@@ -238,8 +247,12 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    agente.guardar_modelo("6 figuras 50 buenos-1")
-  
+    agente.guardar_modelo("bueno bueno y optimo")
+    recom[20]
+   
+    data={'recom':recom,'times':times}
+    df = pd.DataFrame(data, columns = ['recom', 'times'])
+    df.to_csv('bueno bueno y optimoMaestro4.csv')
 """
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
@@ -265,7 +278,7 @@ if __name__ == "__main__":
     """
          #if e % 10 == 0:
           #   agent.save("./save/cartpole-dqn.h5")
-        #agente.guardar_modelo("6 figuras 30 buenos")
+        #agente.guardar_modelo("6 figuras javier")
     #agente.cargar_modelo("uno")
 """     
         time=0
@@ -279,5 +292,4 @@ if __name__ == "__main__":
                 print(time)
                 break
                 
-
 """     

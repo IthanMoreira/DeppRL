@@ -14,6 +14,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
+from tensorflow.python.keras.models import Sequential, load_model
 from collections import deque 
 import matplotlib.pyplot as plt
     
@@ -25,8 +26,10 @@ class Deep_NN:
     def __init__(self, aprendizaje=0.001, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
+        
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
+        
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=20000)
@@ -68,14 +71,7 @@ class Deep_NN:
 
     def decision(self, estado): #toma una accion sea random o la mayor
         if np.random.rand() <= self.epsilon:
-            return random.randrange(self.cantidad_acciones)
-        valores = self.modelo.predict(estado)
-        #print (valores)
-        return np.argmax(valores[0])  # accion random o mayor
-    
-    def decision_entrenador(self, estado): #toma una accion sea random o la mayor
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.cantidad_acciones)
+            return  random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
         #print (valores)
         return np.argmax(valores[0])  # accion random o mayor
@@ -115,10 +111,12 @@ class Deep_NN:
             self.epsilon *= self.epsilon_decay
 
     def cargar_modelo(self, name):
-        self.modelo.load_weights(name)
+        self.modelo=load_model('modelo_'+name)
+        self.modelo.load_weights('pesos_'+name)
 
     def guardar_modelo(self, name):
-        self.modelo.save_weights(name)
+        self.modelo.save_weights('pesos_'+name)
+        self.modelo.save('modelo_'+name)
     ##def actualizar (self):
      #   self.modelo.set_weights(self.modelo.get_weights())
 if __name__ == "__main__":
@@ -159,7 +157,8 @@ if __name__ == "__main__":
     agente = Deep_NN(estado=state) 
     #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
     entrenador = Deep_NN(estado=state)
-    entrenador.cargar_modelo("6 figuras 30 buenos")
+    entrenador.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+    entrenador.epsilon=0
     #agente.modelo.summary()
     done = False
     terminado = 0 
@@ -170,7 +169,15 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    while len(agente.memory) < 100:
+    #datos interactive 
+    interactive = 0.9
+    interactive_decay = 0.995
+    ultima_accion=7
+    interacciones=0
+    
+    
+    
+    while len(agente.memory) < 500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -193,58 +200,73 @@ if __name__ == "__main__":
     
     
     for e in range(agente.episodios):
-        if terminado <= 10:
-            state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-            rewardCum=0
-            time=0
-            
-            while True:
-                
-                action = agente.decision(state)#int(input("accion = "))
-                action_entrenador=entrenador.decision_entrenador(state)
-                print ("accion entrenador = ",action_entrenador)
-                print ("accion agente = ",action)
-                next_state, reward, done= sim.seleccion(action_entrenador) # segun la accion retorna desde el entorno todo eso
-                #if reward==-0.01 and time>6:
-                #    reward=reward*(time-6)
-                agente.experiencia(state, action_entrenador, reward, next_state, done)          
-                
-                state = next_state
-                
-                rewardCum=reward+rewardCum
-                
-                if done or time>250:
-                    timercum=time+timercum
-                    times.append(time)
-                    recom.append(rewardCum)
-                    es.append(e)
-                    print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                    terminado=terminado+1
-                    break
+        state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+        rewardCum=0
+        time=0
+        
+        while True:
+            if ultima_accion == 0:
+                if np.random.rand() <= interactive and interacciones <= 50:
+                    action = agente.decision(state) #int(input("accion = "))
+                    action_entrenador=entrenador.decision(state)
+                    print ("accion entrenador = ",action_entrenador)
+                    print ("accion agente = ",action)
+                    next_state, reward, done= sim.seleccion(action_entrenador) # segun la accion retorna desde el entorno todo eso
+                    #if reward==-0.01 and time>6:
+                    #    reward=reward*(time-6)
+                    agente.experiencia(state, action_entrenador, reward, next_state, done)          
+                    ultima_accion=action_entrenador
+                    state = next_state
                     
-                if len(agente.memory) >= batch_size:
-                    agente.entrenar(batch_size,agente.memory)     
-                                
-                time=time+1
-            if e%10==0 and e>9:
-                     
-                plt.plot(es,recom)
-                plt.show()
-                plt.plot(es,times)
-                plt.show()
-            if recom[len(recom)-50:].count(6)>=49:
-                break
-            sim.restartScenario()
-            tim.sleep(1)
-        else:
-            state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-            rewardCum=0
-            time=0
-            
-            while True:
-                
+                    rewardCum=reward+rewardCum
+                    
+                    if done or time>250:
+                        timercum=time+timercum
+                        times.append(time)
+                        recom.append(rewardCum)
+                        es.append(e)
+                        print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                        terminado=terminado+1
+                        break
+                        
+                    if len(agente.memory) >= batch_size:
+                        agente.entrenar(batch_size,agente.memory)     
+                                    
+                    time=time+1
+                    
+                    interactive *= interactive_decay
+                    print (interacciones)
+                    interacciones = interacciones+1
+                    
+                else: 
+                    action = agente.decision(state)#int(input("accion = "))
+                    ultima_accion=action
+                    next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+                    #if reward==-0.01 and time>6:
+                    #    reward=reward*(time-6)
+                    agente.experiencia(state, action, reward, next_state, done)          
+                    
+                    state = next_state
+                    
+                    rewardCum=reward+rewardCum
+                    
+                    if done or time>250:
+                        timercum=time+timercum
+                        times.append(time)
+                        recom.append(rewardCum)
+                        es.append(e)
+                        print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                        terminado=terminado+1
+                        break
+                        
+                    if len(agente.memory) >= batch_size:
+                        agente.entrenar(batch_size,agente.memory)     
+                                    
+                    time=time+1
+
+            else: 
                 action = agente.decision(state)#int(input("accion = "))
-                            
+                ultima_accion=action
                 next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
                 #if reward==-0.01 and time>6:
                 #    reward=reward*(time-6)
@@ -267,16 +289,18 @@ if __name__ == "__main__":
                     agente.entrenar(batch_size,agente.memory)     
                                 
                 time=time+1
-            if e%10==0 and e>9:
-                     
-                plt.plot(es,recom)
-                plt.show()
-                plt.plot(es,times)
-                plt.show()
-            if recom[len(recom)-50:].count(6)>=49:
-                break
-            sim.restartScenario()
-            tim.sleep(1)
+                
+        if e%10==0 and e>9:
+                 
+            plt.plot(es,recom)
+            plt.show()
+            plt.plot(es,times)
+            plt.show()
+        if recom[len(recom)-50:].count(6)>=50:
+            break
+        sim.restartScenario()
+        tim.sleep(1)
+
         
     #plt.plot(times,recom) 
     #plt.show()               
