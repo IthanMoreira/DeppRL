@@ -157,7 +157,12 @@ if __name__ == "__main__":
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
 <<<<<<< HEAD
+<<<<<<< HEAD
     #agente.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+=======
+    #agente.cargar_modelo("6 figuras javier")
+    #agente.epsilon=0
+>>>>>>> 8113cee40d93464c7b1d1c2d0ace2c69118a084e
 =======
     #agente.cargar_modelo("6 figuras javier")
     #agente.epsilon=0
