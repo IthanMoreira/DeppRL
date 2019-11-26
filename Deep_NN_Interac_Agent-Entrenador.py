@@ -157,7 +157,7 @@ if __name__ == "__main__":
     agente = Deep_NN(estado=state) 
     #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
     entrenador = Deep_NN(estado=state)
-    entrenador.cargar_modelo("6 figuras javier")
+    entrenador.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
     entrenador.epsilon=0
     #agente.modelo.summary()
     done = False
@@ -177,7 +177,7 @@ if __name__ == "__main__":
     
     
     
-    while len(agente.memory) < 100:
+    while len(agente.memory) < 500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -263,16 +263,7 @@ if __name__ == "__main__":
                         agente.entrenar(batch_size,agente.memory)     
                                     
                     time=time+1
-                    if e%10==0 and e>9:
-                             
-                        plt.plot(es,recom)
-                        plt.show()
-                        plt.plot(es,times)
-                        plt.show()
-                    if recom[len(recom)-50:].count(6)>=50:
-                        break
-                    sim.restartScenario()
-                    tim.sleep(1)
+
             else: 
                 action = agente.decision(state)#int(input("accion = "))
                 ultima_accion=action
