@@ -72,8 +72,8 @@ class Deep_NN:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
 
-        print (valores)
-        print (np.argmax(valores[0]))
+        #print (valores)
+        #print (np.argmax(valores[0]))
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size, memo):
@@ -225,12 +225,13 @@ if __name__ == "__main__":
                 agente.entrenar(batch_size,agente.memory)     
                             
             time=time+1
-        if e%10==0 and e>9:
-                 
-            plt.plot(es,recom)
-            plt.show()
-            plt.plot(es,times)
-            plt.show()
+            
+            if e%10==0 and e>9:
+                plt.plot(es,recom)
+                plt.show()
+                plt.plot(es,times)
+                plt.show()
+                
         if recom[len(recom)-50:].count(3)>=50:
             break
         sim.restartScenario()
@@ -243,12 +244,12 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    agente.guardar_modelo("bueno bueno y optimo")
+    agente.guardar_modelo("autonomo27-11e100ep020")
     recom[20]
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('bueno bueno y optimoMaestro4.csv')
+    df.to_csv('autonomo 27-11 e100 ep020.csv')
 """
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    

@@ -4,6 +4,7 @@ Created on Sat Sep 28 15:09:29 2019
 
 @author: Ithan
 """
+import pandas as pd
 import random
 import tensorflow as tf
 import numpy as np
@@ -157,8 +158,8 @@ if __name__ == "__main__":
     agente = Deep_NN(estado=state) 
     #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
     entrenador = Deep_NN(estado=state)
-    entrenador.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
-    entrenador.epsilon=0
+    entrenador.cargar_modelo("autonomo27-11e100ep020")
+    entrenador.epsilon=0.2
     #agente.modelo.summary()
     done = False
     terminado = 0 
@@ -170,7 +171,7 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     #datos interactive 
-    interactive = 0.9
+    interactive = 0.5
     interactive_decay = 0.995
     ultima_accion=7
     interacciones=0
@@ -236,6 +237,10 @@ if __name__ == "__main__":
                     
                     interactive *= interactive_decay
                     print (interacciones)
+                    
+                    if interacciones == 50:
+                        print (entrenador.epsilon)
+                        
                     interacciones = interacciones+1
                     
                 else: 
@@ -290,12 +295,13 @@ if __name__ == "__main__":
                                 
                 time=time+1
                 
-        if e%10==0 and e>9:
-                 
-            plt.plot(es,recom)
-            plt.show()
-            plt.plot(es,times)
-            plt.show()
+            if e%10==0 and e>9:
+                     
+                plt.plot(es,recom)
+                plt.show()
+                plt.plot(es,times)
+                plt.show()
+                
         if recom[len(recom)-50:].count(6)>=50:
             break
         sim.restartScenario()
@@ -307,7 +313,14 @@ if __name__ == "__main__":
     plt.plot(es,recom)
     plt.show()
     plt.plot(es,times)
-    plt.show()           
+    plt.show() 
+    
+    agente.guardar_modelo("interactive 27-11 entrenador agente e100ep0009")
+    recom[20]
+   
+    data={'recom':recom,'times':times}
+    df = pd.DataFrame(data, columns = ['recom', 'times'])
+    df.to_csv('interactive 27-11 entrenador agente e100ep0009.csv')        
     
   
 """
