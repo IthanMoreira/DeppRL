@@ -1,2 +1,2 @@
-model_checkpoint_path: "pesos_interactive 27-11 entrenador agente e100ep0009"
-all_model_checkpoint_paths: "pesos_interactive 27-11 entrenador agente e100ep0009"
+model_checkpoint_path: "pesos_interactive 29-11 entrenadorhumano e88"
+all_model_checkpoint_paths: "pesos_interactive 29-11 entrenadorhumano e88"

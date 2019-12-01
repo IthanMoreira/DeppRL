@@ -158,8 +158,8 @@ if __name__ == "__main__":
     agente = Deep_NN(estado=state) 
     #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
     entrenador = Deep_NN(estado=state)
-    entrenador.cargar_modelo("autonomo27-11e100ep020")
-    entrenador.epsilon=0.2
+    entrenador.cargar_modelo("autonomo28-11e100ep005")
+    entrenador.epsilon=0.05
     #agente.modelo.summary()
     done = False
     terminado = 0 
@@ -175,6 +175,7 @@ if __name__ == "__main__":
     interactive_decay = 0.995
     ultima_accion=7
     interacciones=0
+    bandera = False
     
     
     
@@ -207,7 +208,7 @@ if __name__ == "__main__":
         
         while True:
             if ultima_accion == 0:
-                if np.random.rand() <= interactive and interacciones <= 50:
+                if np.random.rand() <= interactive and interacciones <= 100:
                     action = agente.decision(state) #int(input("accion = "))
                     action_entrenador=entrenador.decision(state)
                     print ("accion entrenador = ",action_entrenador)
@@ -222,6 +223,7 @@ if __name__ == "__main__":
                     rewardCum=reward+rewardCum
                     
                     if done or time>250:
+                        bandera = False
                         timercum=time+timercum
                         times.append(time)
                         recom.append(rewardCum)
@@ -256,6 +258,7 @@ if __name__ == "__main__":
                     rewardCum=reward+rewardCum
                     
                     if done or time>250:
+                        bandera = False
                         timercum=time+timercum
                         times.append(time)
                         recom.append(rewardCum)
@@ -282,6 +285,7 @@ if __name__ == "__main__":
                 rewardCum=reward+rewardCum
                 
                 if done or time>250:
+                    bandera = False
                     timercum=time+timercum
                     times.append(time)
                     recom.append(rewardCum)
@@ -295,12 +299,13 @@ if __name__ == "__main__":
                                 
                 time=time+1
                 
-            if e%10==0 and e>9:
+            if e%10==0 and e>9 and bandera == False:
                      
                 plt.plot(es,recom)
                 plt.show()
                 plt.plot(es,times)
                 plt.show()
+                bandera=True
                 
         if recom[len(recom)-50:].count(6)>=50:
             break
@@ -315,12 +320,12 @@ if __name__ == "__main__":
     plt.plot(es,times)
     plt.show() 
     
-    agente.guardar_modelo("interactive 27-11 entrenador agente e100ep0009")
+    agente.guardar_modelo("interactive 28-11 entrenador agente e100ep0009")
     recom[20]
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('interactive 27-11 entrenador agente e100ep0009.csv')        
+    df.to_csv('interactive 28-11 entrenador agente e100ep0009.csv')        
     
   
 """
