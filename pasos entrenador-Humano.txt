@@ -1,6 +1,0 @@
-1.- se carga automaticamente los primeros 1000 pasos 
-2.- Se comienza a entrenar con el maestro (aprox. 30 min)
-3.- guardar modelo como fecha-episodio-entrenador (02*12-ep100-JavierRivas)
-4.- guardar arreglo de recom y tiempo 
-5.- junto todo en una carpeta en entrenador humano y sub carpeta con nombre del entrenador 
-6.- guardar fotos de los ultimos graficos 

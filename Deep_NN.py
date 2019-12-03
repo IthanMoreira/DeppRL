@@ -72,8 +72,8 @@ class Deep_NN:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
 
-        #print (valores)
-        #print (np.argmax(valores[0]))
+        print (valores)
+        print (np.argmax(valores[0]))
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size, memo):
@@ -156,7 +156,12 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-    agente.cargar_modelo("base de los 1000 pasos")
+<<<<<<< HEAD
+    #agente.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+=======
+    #agente.cargar_modelo("6 figuras javier")
+    #agente.epsilon=0
+>>>>>>> 8113cee40d93464c7b1d1c2d0ace2c69118a084e
 
     #agente.modelo.summary()
     done = False
@@ -167,9 +172,30 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    bandera = False
-
- 
+    while len(agente.memory) <1000:
+        action = agente.decision(state)            
+        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        
+        if reward==-0.01 and timer>18:
+            reward=reward*(timer-18)
+        elif reward==-0.01:
+            reward=0
+        
+        rewardCum=reward+rewardCum
+        agente.experiencia(state, action, reward, next_state, done)              
+        state = next_state
+        
+        if done or timer>100:
+                timercum=timer+timercum
+                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
+                sim.restartScenario()
+                rewardCum=0
+                timer=0
+        timer=timer+1
+    
+    timercum=0
+    
+    
     for e in range(agente.episodios):
         
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -192,7 +218,6 @@ if __name__ == "__main__":
             rewardCum=reward+rewardCum
             
             if done or time>100:
-                bandera = False
                 timercum=time+timercum
                 times.append(time)
                 recom.append(rewardCum)
@@ -204,14 +229,14 @@ if __name__ == "__main__":
                 agente.entrenar(batch_size,agente.memory)     
                             
             time=time+1
-            
-            if e%10==0 and e>9 and bandera == False:
-                plt.plot(es,recom)
-                plt.show()
-                plt.plot(es,times)
-                plt.show()
-                bandera=True
-                
+        if e%10==0 and e>9:
+                 
+            plt.plot(es,recom)
+            plt.show()
+            plt.plot(es,times)
+            plt.show()
+        if recom[len(recom)-50:].count(3)>=50:
+            break
         sim.restartScenario()
         tim.sleep(1)
 
@@ -222,12 +247,12 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    agente.guardar_modelo("autonomo28-11")
+    agente.guardar_modelo("bueno bueno y optimo")
     recom[20]
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('autonomo 28-11.csv')
+    df.to_csv('bueno bueno y optimoMaestro4.csv')
 """
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    

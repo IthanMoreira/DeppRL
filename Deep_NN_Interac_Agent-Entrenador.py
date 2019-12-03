@@ -4,7 +4,6 @@ Created on Sat Sep 28 15:09:29 2019
 
 @author: Ithan
 """
-import pandas as pd
 import random
 import tensorflow as tf
 import numpy as np
@@ -156,11 +155,10 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-    agente.cargar_modelo("base de los 1000 pasos")
-    
+    #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
     entrenador = Deep_NN(estado=state)
-    entrenador.cargar_modelo("autonomo28-11e100ep005")
-    entrenador.epsilon=0.05
+    entrenador.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+    entrenador.epsilon=0
     #agente.modelo.summary()
     done = False
     terminado = 0 
@@ -172,11 +170,33 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     #datos interactive 
-    interactive = 0.5
+    interactive = 0.9
     interactive_decay = 0.995
     ultima_accion=7
     interacciones=0
-    bandera = False
+    
+    
+    
+    while len(agente.memory) < 500:
+        action = agente.decision(state)            
+        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        
+        #if reward==-0.01 and timer>6:
+        #        reward=reward*(timer-6)
+        
+        rewardCum=reward+rewardCum
+        agente.experiencia(state, action, reward, next_state, done)              
+        state = next_state
+        
+        if done or timer>250:
+                timercum=timer+timercum
+                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
+                sim.restartScenario()
+                rewardCum=0
+                timer=0
+        timer=timer+1
+    
+    timercum=0
     
     
     for e in range(agente.episodios):
@@ -201,7 +221,6 @@ if __name__ == "__main__":
                     rewardCum=reward+rewardCum
                     
                     if done or time>250:
-                        bandera = False
                         timercum=time+timercum
                         times.append(time)
                         recom.append(rewardCum)
@@ -217,10 +236,6 @@ if __name__ == "__main__":
                     
                     interactive *= interactive_decay
                     print (interacciones)
-                    
-                    if interacciones == 50:
-                        print (entrenador.epsilon)
-                        
                     interacciones = interacciones+1
                     
                 else: 
@@ -236,7 +251,6 @@ if __name__ == "__main__":
                     rewardCum=reward+rewardCum
                     
                     if done or time>250:
-                        bandera = False
                         timercum=time+timercum
                         times.append(time)
                         recom.append(rewardCum)
@@ -263,7 +277,6 @@ if __name__ == "__main__":
                 rewardCum=reward+rewardCum
                 
                 if done or time>250:
-                    bandera = False
                     timercum=time+timercum
                     times.append(time)
                     recom.append(rewardCum)
@@ -277,14 +290,12 @@ if __name__ == "__main__":
                                 
                 time=time+1
                 
-            if e%10==0 and e>9 and bandera == False:
-                     
-                plt.plot(es,recom)
-                plt.show()
-                plt.plot(es,times)
-                plt.show()
-                bandera=True
-                
+        if e%10==0 and e>9:
+                 
+            plt.plot(es,recom)
+            plt.show()
+            plt.plot(es,times)
+            plt.show()
         if recom[len(recom)-50:].count(6)>=50:
             break
         sim.restartScenario()
@@ -296,14 +307,7 @@ if __name__ == "__main__":
     plt.plot(es,recom)
     plt.show()
     plt.plot(es,times)
-    plt.show() 
-    
-    agente.guardar_modelo("interactive 28-11 entrenador agente e100ep0009")
-    recom[20]
-   
-    data={'recom':recom,'times':times}
-    df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('interactive 28-11 entrenador agente e100ep0009.csv')        
+    plt.show()           
     
   
 """
