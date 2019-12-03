@@ -167,8 +167,9 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    '''
-    while len(agente.memory) <1000:
+    
+
+    while len(agente.memory) <500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -183,12 +184,12 @@ if __name__ == "__main__":
         
         if done or timer>100:
                 timercum=timer+timercum
-                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
+                print(" score: ",round(rewardCum,2)," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
                 rewardCum=0
                 timer=0
         timer=timer+1
-    '''
+    
     timercum=0
 
     for e in range(agente.episodios):
@@ -212,12 +213,12 @@ if __name__ == "__main__":
             
             rewardCum=reward+rewardCum
             
-            if done or time>100:
+            if done or time>80:
                 timercum=time+timercum
                 times.append(time)
                 recom.append(round(rewardCum,2))
                 es.append(e)
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                print("episode: ",e," score: ",round(rewardCum,2)," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
                 break
                 
             if len(agente.memory) >= batch_size:
@@ -230,7 +231,7 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if recom[len(recom)-50:].count(3)>=50:
+        if e>350:
             break
         sim.restartScenario()
         tim.sleep(1)
@@ -242,12 +243,12 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    agente.guardar_modelo("bueno bueno y optimo")
-    recom[20]
+    agente.guardar_modelo("Maestro")   
+
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('bueno bueno y optimoMaestro4.csv')
+    df.to_csv('maestro.csv')
 """
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
