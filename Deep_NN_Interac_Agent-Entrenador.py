@@ -336,12 +336,12 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if recom[len(recom)-50:].count(6)>=50:
+        if e>=350:
+            agente.guardar_modelo("________")
             break
         sim.restartScenario()
         tim.sleep(1)
 
-        
     #plt.plot(times,recom) 
     #plt.show()               
     plt.plot(es,recom)
