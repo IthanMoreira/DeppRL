@@ -216,7 +216,7 @@ if __name__ == "__main__":
             if done or time>100:
                 timercum=time+timercum
                 times.append(time)
-                recom.append(rewardCum)
+                recom.append(round(rewardCum,2))
                 es.append(e)
                 print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
                 break
