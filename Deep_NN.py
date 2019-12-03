@@ -168,10 +168,6 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     
-<<<<<<< HEAD
-
-=======
->>>>>>> ade369ff1894aaf199b84d9c5fdc4c75894d0663
     while len(agente.memory) <500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -246,13 +242,9 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-<<<<<<< HEAD
     agente.guardar_modelo("Maestro")   
 
-=======
-    agente.guardar_modelo("bueno bueno y optimo876855")
-    recom[20]
->>>>>>> ade369ff1894aaf199b84d9c5fdc4c75894d0663
+
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
