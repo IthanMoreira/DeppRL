@@ -76,6 +76,13 @@ class Deep_NN:
         valores = self.modelo.predict(estado)
         #print (valores)
         return np.argmax(valores[0])  # accion random o mayor
+    
+    def decisionArreglo(self, estado): #toma una accion sea random o la mayor
+        if np.random.rand() <= self.epsilon:
+            return  random.randrange(self.cantidad_acciones)
+        valores = self.modelo.predict(estado)
+        print (valores)
+        return valores # accion random o mayor
        
     def entrenar(self, batch_size, memo):
         miniBatch = random.sample(self.memory, batch_size)#con lo guardado se entrena la red con experiencias random
@@ -157,7 +164,7 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-    #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
+    agente.cargar_modelo("base de los 1000 pasos")
     #agente.modelo.summary()
     done = False
     terminado = 0 
@@ -176,29 +183,6 @@ if __name__ == "__main__":
     bandera = False
     
     
-    
-    while len(agente.memory) < 1000:
-        action = agente.decision(state)            
-        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-        
-        #if reward==-0.01 and timer>6:
-        #        reward=reward*(timer-6)
-        
-        rewardCum=reward+rewardCum
-        agente.experiencia(state, action, reward, next_state, done)              
-        state = next_state
-        
-        if done or timer>250:
-                timercum=timer+timercum
-                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
-                sim.restartScenario()
-                rewardCum=0
-                timer=0
-        timer=timer+1
-    
-    timercum=0
-    
-    
     for e in range(agente.episodios):
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         rewardCum=0
@@ -206,7 +190,11 @@ if __name__ == "__main__":
         
         while True:
             if ultima_accion == 0:
-                if np.random.rand() <= interactive and interacciones <= 50:
+                arreglo = agente.decisionArreglo(state)
+                print (arreglo)
+                arreglo=sorted(arreglo)
+                print ("diferencia", arreglo[2]-arreglo[3])
+                if np.random.rand() <= interactive and interacciones <= 50 and arreglo[2]-arreglo[3] <=10:
                     try:    
                         print("Acciones:")
                         print("0) Tomar objeto")
@@ -328,7 +316,7 @@ if __name__ == "__main__":
     plt.plot(es,times)
     plt.show() 
     
-    agente.guardar_modelo("interactive 29-11 entrenadorhumano e88 ")
+    agente.guardar_modelo("base de los 1000 pasos")
     recom[20]
    
     data={'recom':recom,'times':times}

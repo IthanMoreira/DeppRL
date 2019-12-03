@@ -156,8 +156,7 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-
-    #agente.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+    agente.cargar_modelo("base de los 1000 pasos")
 
     #agente.modelo.summary()
     done = False
@@ -169,30 +168,8 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     bandera = False
-    while len(agente.memory) <1000:
-        action = agente.decision(state)            
-        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-        
-        if reward==-0.01 and timer>18:
-            reward=reward*(timer-18)
-        elif reward==-0.01:
-            reward=0
-        
-        rewardCum=reward+rewardCum
-        agente.experiencia(state, action, reward, next_state, done)              
-        state = next_state
-        
-        if done or timer>100:
-                timercum=timer+timercum
-                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
-                sim.restartScenario()
-                rewardCum=0
-                timer=0
-        timer=timer+1
-    
-    timercum=0
-    
-    
+
+ 
     for e in range(agente.episodios):
         
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente

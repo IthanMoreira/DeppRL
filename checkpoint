@@ -1,2 +1,2 @@
-model_checkpoint_path: "pesos_interactive 29-11 entrenadorhumano e88"
-all_model_checkpoint_paths: "pesos_interactive 29-11 entrenadorhumano e88"
+model_checkpoint_path: "pesos_base de los 1000 pasos"
+all_model_checkpoint_paths: "pesos_base de los 1000 pasos"
