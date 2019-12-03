@@ -72,8 +72,8 @@ class Deep_NN:
             return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
 
-        print (valores)
-        print (np.argmax(valores[0]))
+        #print (valores)
+        #print (np.argmax(valores[0]))
         return np.argmax(valores[0])  # accion random o mayor
        
     def entrenar(self, batch_size, memo):
@@ -156,12 +156,7 @@ if __name__ == "__main__":
     """
     state=sim.kinectVisionRGB()
     agente = Deep_NN(estado=state) 
-<<<<<<< HEAD
-    #agente.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
-=======
-    #agente.cargar_modelo("6 figuras javier")
-    #agente.epsilon=0
->>>>>>> 8113cee40d93464c7b1d1c2d0ace2c69118a084e
+
 
     #agente.modelo.summary()
     done = False
@@ -172,6 +167,7 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
+    '''
     while len(agente.memory) <1000:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -192,7 +188,7 @@ if __name__ == "__main__":
                 rewardCum=0
                 timer=0
         timer=timer+1
-    
+    '''
     timercum=0
     
     
