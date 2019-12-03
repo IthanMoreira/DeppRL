@@ -194,8 +194,7 @@ if __name__ == "__main__":
         timer=timer+1
     
     timercum=0
-    
-    
+
     for e in range(agente.episodios):
         
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
