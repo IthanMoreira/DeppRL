@@ -167,8 +167,8 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    '''
-    while len(agente.memory) <1000:
+    
+    while len(agente.memory) <500:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -188,7 +188,7 @@ if __name__ == "__main__":
                 rewardCum=0
                 timer=0
         timer=timer+1
-    '''
+    
     timercum=0
 
     for e in range(agente.episodios):
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    agente.guardar_modelo("bueno bueno y optimo")
+    agente.guardar_modelo("bueno bueno y optimo876855")
     recom[20]
    
     data={'recom':recom,'times':times}

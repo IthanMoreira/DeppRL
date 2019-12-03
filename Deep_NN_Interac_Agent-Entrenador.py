@@ -29,7 +29,7 @@ class Deep_NN:
         self.epsilon = epsilon # exploracion inicial
         
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.9995
         
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
@@ -48,6 +48,10 @@ class Deep_NN:
         self.tamano_pool = (2, 2)
         self.episodios=10000
         self.modelo=self.contruModelo()
+        
+        self.modelo_maestro=load_model('modelo_'+"6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+        self.maestro.load_weights('pesos_'+"6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+        
     
     def contruModelo (self):
         cnn = Sequential()
@@ -71,9 +75,17 @@ class Deep_NN:
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
 
     def decision(self, estado): #toma una accion sea random o la mayor
+        
         if np.random.rand() <= self.epsilon:
             return  random.randrange(self.cantidad_acciones)
-        valores = self.modelo.predict(estado)
+        else:
+            valores = self.modelo.predict(estado)
+        #print (valores)
+        return np.argmax(valores[0])  # accion random o mayor
+    
+    def decision_maestro(self, estado): #toma una accion sea random o la mayor
+        
+        valores = self.modelo_maestro.predict(estado)
         #print (valores)
         return np.argmax(valores[0])  # accion random o mayor
        
@@ -114,7 +126,8 @@ class Deep_NN:
     def cargar_modelo(self, name):
         self.modelo=load_model('modelo_'+name)
         self.modelo.load_weights('pesos_'+name)
-
+        
+   
     def guardar_modelo(self, name):
         self.modelo.save_weights('pesos_'+name)
         self.modelo.save('modelo_'+name)
@@ -155,11 +168,7 @@ if __name__ == "__main__":
     print(agente.modelo.predict(state))
     """
     state=sim.kinectVisionRGB()
-    agente = Deep_NN(estado=state) 
-    #agente.cargar_modelo("dos figuras cuadradas del 50 adelante todo BN")
-    entrenador = Deep_NN(estado=state)
-    entrenador.cargar_modelo("6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
-    entrenador.epsilon=0
+    agente = Deep_NN(estado=state)     
     #agente.modelo.summary()
     done = False
     terminado = 0 
@@ -171,19 +180,22 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     #datos interactive 
-    interactive = 0.9
-    interactive_decay = 0.995
+   
+    
+    #estado "critico"
     ultima_accion=7
     interacciones=0
     
     
     
-    while len(agente.memory) < 500:
+    while len(agente.memory) < 400:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
-        #if reward==-0.01 and timer>6:
-        #        reward=reward*(timer-6)
+        if reward==-0.01 and timer>18:
+            reward=reward*(timer-18)
+        elif reward==-0.01:
+            reward=0
         
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, reward, next_state, done)              
@@ -199,6 +211,33 @@ if __name__ == "__main__":
     
     timercum=0
     
+    count=0
+    
+    while  count <= 100:
+        action = agente.modelo_maestro.decision_maestro(state)            
+        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+        
+        #if reward==-0.01 and timer>6:
+        #        reward=reward*(timer-6)
+        
+        rewardCum=reward+rewardCum
+        agente.experiencia(state, action, reward, next_state, done)              
+        state = next_state
+        
+        if done or timer>250:
+                timercum=timer+timercum
+                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
+                sim.restartScenario()
+                rewardCum=0
+                timer=0
+        
+        if len(agente.memory) >= batch_size:
+            agente.entrenar(batch_size,agente.memory) 
+                        
+        timer=timer+1
+        count=count+1
+    
+    timercum=0
     
     for e in range(agente.episodios):
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -341,7 +380,7 @@ if __name__ == "__main__":
 """     
         time=0
         e=1
-        ee=0.995
+        ee=0.91
         while True:
             time=time+1
             if e > 0.01:
