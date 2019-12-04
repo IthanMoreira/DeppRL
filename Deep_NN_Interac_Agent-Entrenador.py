@@ -49,8 +49,8 @@ class Deep_NN:
         self.episodios=10000
         self.modelo=self.contruModelo()
         
-        self.modelo_maestro=load_model('modelo_'+"6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
-        self.maestro.load_weights('pesos_'+"6 figuras  rpp=1rp=0.53rm=-1n=-0.01 mod2ithan")
+        self.modelo_maestro=load_model('modelo_'+".....")
+        self.maestro.load_weights('pesos_'+".....")
         
     
     def contruModelo (self):
@@ -84,7 +84,6 @@ class Deep_NN:
         return np.argmax(valores[0])  # accion random o mayor
     
     def decision_maestro(self, estado): #toma una accion sea random o la mayor
-        
         valores = self.modelo_maestro.predict(estado)
         #print (valores)
         return np.argmax(valores[0])  # accion random o mayor
@@ -179,14 +178,6 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    #datos interactive 
-   
-    
-    #estado "critico"
-    ultima_accion=7
-    interacciones=0
-    
-    
     
     while len(agente.memory) < 400:
         action = agente.decision(state)            
@@ -213,13 +204,17 @@ if __name__ == "__main__":
     
     count=0
     
+    # Interactive inicio early advising (se enseña cuando el agente aun no conose muy bien el escenario)
+    
     while  count <= 100:
         action = agente.modelo_maestro.decision_maestro(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
-        #if reward==-0.01 and timer>6:
-        #        reward=reward*(timer-6)
-        
+        if reward==-0.01 and timer>18:
+            reward=reward*(timer-18)
+        elif reward==-0.01:
+            reward=0   
+            
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, reward, next_state, done)              
         state = next_state
@@ -245,90 +240,30 @@ if __name__ == "__main__":
         time=0
         
         while True:
-            if ultima_accion == 0:
-                if np.random.rand() <= interactive and interacciones <= 50:
-                    action = agente.decision(state) #int(input("accion = "))
-                    action_entrenador=entrenador.decision(state)
-                    print ("accion entrenador = ",action_entrenador)
-                    print ("accion agente = ",action)
-                    next_state, reward, done= sim.seleccion(action_entrenador) # segun la accion retorna desde el entorno todo eso
-                    #if reward==-0.01 and time>6:
-                    #    reward=reward*(time-6)
-                    agente.experiencia(state, action_entrenador, reward, next_state, done)          
-                    ultima_accion=action_entrenador
-                    state = next_state
-                    
-                    rewardCum=reward+rewardCum
-                    
-                    if done or time>250:
-                        timercum=time+timercum
-                        times.append(time)
-                        recom.append(rewardCum)
-                        es.append(e)
-                        print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                        terminado=terminado+1
-                        break
-                        
-                    if len(agente.memory) >= batch_size:
-                        agente.entrenar(batch_size,agente.memory)     
-                                    
-                    time=time+1
-                    
-                    interactive *= interactive_decay
-                    print (interacciones)
-                    interacciones = interacciones+1
-                    
-                else: 
-                    action = agente.decision(state)#int(input("accion = "))
-                    ultima_accion=action
-                    next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-                    #if reward==-0.01 and time>6:
-                    #    reward=reward*(time-6)
-                    agente.experiencia(state, action, reward, next_state, done)          
-                    
-                    state = next_state
-                    
-                    rewardCum=reward+rewardCum
-                    
-                    if done or time>250:
-                        timercum=time+timercum
-                        times.append(time)
-                        recom.append(rewardCum)
-                        es.append(e)
-                        print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                        terminado=terminado+1
-                        break
-                        
-                    if len(agente.memory) >= batch_size:
-                        agente.entrenar(batch_size,agente.memory)     
-                                    
-                    time=time+1
-
-            else: 
-                action = agente.decision(state)#int(input("accion = "))
-                ultima_accion=action
-                next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-                #if reward==-0.01 and time>6:
-                #    reward=reward*(time-6)
-                agente.experiencia(state, action, reward, next_state, done)          
+            action = agente.decision(state)#int(input("accion = "))
+            ultima_accion=action
+            next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+            #if reward==-0.01 and time>6:
+            #    reward=reward*(time-6)
+            agente.experiencia(state, action, reward, next_state, done)          
+            
+            state = next_state
+            
+            rewardCum=reward+rewardCum
+            
+            if done or time>250:
+                timercum=time+timercum
+                times.append(time)
+                recom.append(rewardCum)
+                es.append(e)
+                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                terminado=terminado+1
+                break
                 
-                state = next_state
-                
-                rewardCum=reward+rewardCum
-                
-                if done or time>250:
-                    timercum=time+timercum
-                    times.append(time)
-                    recom.append(rewardCum)
-                    es.append(e)
-                    print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                    terminado=terminado+1
-                    break
-                    
-                if len(agente.memory) >= batch_size:
-                    agente.entrenar(batch_size,agente.memory)     
-                                
-                time=time+1
+            if len(agente.memory) >= batch_size:
+                agente.entrenar(batch_size,agente.memory)     
+                            
+            time=time+1
                 
         if e%10==0 and e>9:
                  
@@ -336,8 +271,9 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
+            
         if e>=350:
-            agente.guardar_modelo("________")
+            agente.guardar_modelo("DNN-interactive-agente")
             break
         sim.restartScenario()
         tim.sleep(1)
