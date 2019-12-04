@@ -23,7 +23,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.001, epsilon=1, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.001, epsilon=0, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
@@ -118,8 +118,7 @@ class Deep_NN:
         self.modelo.save('modelo_'+name)
         self.modelo.save_weights('pesos_'+name)
         
-    ##def actualizar (self):
-     #   self.modelo.set_weights(self.modelo.get_weights())
+
 if __name__ == "__main__":
     
   
@@ -168,7 +167,8 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     
-    while len(agente.memory) <500:
+    
+    while len(agente.memory) <1000:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -279,7 +279,7 @@ if __name__ == "__main__":
 """     
         time=0
         e=1
-        ee=0.9995
+        ee=0.9993
         while True:
             time=time+1
             if e > 0.01:
