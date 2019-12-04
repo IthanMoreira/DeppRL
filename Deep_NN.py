@@ -23,7 +23,7 @@ sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
 class Deep_NN:
-    def __init__(self, aprendizaje=0.001, epsilon=0, cantidad_acciones=4, estado=np.array([])):
+    def __init__(self, aprendizaje=0.001, epsilon=1, cantidad_acciones=4, estado=np.array([])):
         self.aprendizaje = aprendizaje
         self.epsilon = epsilon # exploracion inicial
         self.epsilon_min = 0.01
@@ -43,7 +43,7 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=10000
+        self.episodios=600
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
@@ -212,7 +212,7 @@ if __name__ == "__main__":
             
             rewardCum=reward+rewardCum
             
-            if done or time>80:
+            if done or time>100:
                 timercum=time+timercum
                 times.append(time)
                 recom.append(round(rewardCum,2))
@@ -230,7 +230,7 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if e>350:
+        if e>600:
             break
         sim.restartScenario()
         tim.sleep(1)
@@ -242,13 +242,13 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    agente.guardar_modelo("Maestro")   
+    agente.guardar_modelo("Maestro2")   
 
 
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('maestro.csv')
+    df.to_csv('maestro2.csv')
 """
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
