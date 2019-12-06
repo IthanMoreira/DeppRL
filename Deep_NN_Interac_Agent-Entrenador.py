@@ -2,9 +2,11 @@
 """
 Created on Sat Sep 28 15:09:29 2019
 
-@author: Ithan
+@author: Javier e Ithan
 """
 
+import pickle
+import pandas as pd
 import random
 import tensorflow as tf
 import numpy as np
@@ -49,8 +51,8 @@ class Deep_NN:
         self.episodios=10000
         self.modelo=self.contruModelo()
         
-        self.modelo_maestro=load_model('modelo_'+".....")
-        self.maestro.load_weights('pesos_'+".....")
+        self.modelo_maestro=load_model('modelo_'+"Maestro")
+        self.modelo_maestro.load_weights('pesos_'+"Maestro")
         
     
     def contruModelo (self):
@@ -132,6 +134,18 @@ class Deep_NN:
         self.modelo.save('modelo_'+name)
     ##def actualizar (self):
      #   self.modelo.set_weights(self.modelo.get_weights())
+     
+    def guardar_memoria(self, name):
+        file=open(name,'wb')  #file object in binary write mode
+        pickle.dump(data,file)      #dump the data in the file object
+        file.close()                #close the file to write into the file
+        
+    def cargar_memoria(self, name):
+       file=open(name,'rb')  #file object in binary read mode
+       data=pickle.load(file)      #load the data back
+       file.close()
+       self.memory=data
+     
 if __name__ == "__main__":
     
   
@@ -179,7 +193,7 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     
-    while len(agente.memory) < 400:
+    while len(agente.memory) < 2:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -207,7 +221,7 @@ if __name__ == "__main__":
     # Interactive inicio early advising (se enseña cuando el agente aun no conose muy bien el escenario)
     
     while  count <= 100:
-        action = agente.modelo_maestro.decision_maestro(state)            
+        action = agente.decision_maestro(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
         if reward==-0.01 and timer>18:
@@ -274,7 +288,11 @@ if __name__ == "__main__":
             
         if e>=350:
             agente.guardar_modelo("DNN-interactive-agente")
+            data={'recom':recom,'times':times}
+            df = pd.DataFrame(data, columns = ['recom', 'times'])
+            df.to_csv('DNN-interactive-agente.csv')
             break
+        
         sim.restartScenario()
         tim.sleep(1)
 
