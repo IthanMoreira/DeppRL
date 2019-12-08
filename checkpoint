@@ -1,2 +1,2 @@
-model_checkpoint_path: "pesos_Maestro"
-all_model_checkpoint_paths: "pesos_Maestro"
+model_checkpoint_path: "pesos_DNN-interactive-humano-Javier"
+all_model_checkpoint_paths: "pesos_DNN-interactive-humano-Javier"
