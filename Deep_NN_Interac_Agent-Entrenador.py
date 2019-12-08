@@ -36,7 +36,7 @@ class Deep_NN:
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=20000)
-        #self.buenos_recuerdos = deque(maxlen=2000)
+        self.memoria_maestro = deque(maxlen=2000)#------------------------------------------------
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles  
         self.longitud=64
         self.altura = 64
@@ -48,11 +48,11 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=10000
+        self.episodios=600
         self.modelo=self.contruModelo()
         
-        self.modelo_maestro=load_model('modelo_'+"Maestro")
-        self.modelo_maestro.load_weights('pesos_'+"Maestro")
+        self.modelo_maestro=load_model('maestro\modelo_'+"Maestro")
+        self.modelo_maestro.load_weights('maestro\pesos_'+"Maestro")
         
     
     def contruModelo (self):
@@ -75,6 +75,9 @@ class Deep_NN:
         return cnn
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
+        
+    def experiencia_maestro(self, estado, accion, recompensa, estado_siguiente, logrado):#--------------------------
+        self.memoria_maestro.append((estado, accion, recompensa, estado_siguiente, logrado))
 
     def decision(self, estado): #toma una accion sea random o la mayor
         
@@ -193,7 +196,7 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     
-    while len(agente.memory) < 2:
+    while len(agente.memory) < 900:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
@@ -208,7 +211,7 @@ if __name__ == "__main__":
         
         if done or timer>250:
                 timercum=timer+timercum
-                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
+                print(" score: ",round(rewardCum,2)," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
                 rewardCum=0
                 timer=0
@@ -230,12 +233,13 @@ if __name__ == "__main__":
             reward=0   
             
         rewardCum=reward+rewardCum
-        agente.experiencia(state, action, reward, next_state, done)              
+        agente.experiencia(state, action, reward, next_state, done)  
+        agente.experiencia_maestro(state, action, reward, next_state, done)              
         state = next_state
         
         if done or timer>250:
                 timercum=timer+timercum
-                print(" score: ",rewardCum," time : ",timer," timeTotal : ",timercum)#                      
+                print(" score: ",round(rewardCum,2)," time : ",timer," timeTotal : ",timercum)#                      
                 sim.restartScenario()
                 rewardCum=0
                 timer=0
@@ -268,9 +272,9 @@ if __name__ == "__main__":
             if done or time>250:
                 timercum=time+timercum
                 times.append(time)
-                recom.append(rewardCum)
+                recom.append(round(rewardCum,2))
                 es.append(e)
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                print("episode: ",e," score: ",round(rewardCum,2)," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
                 terminado=terminado+1
                 break
                 
@@ -278,7 +282,7 @@ if __name__ == "__main__":
                 agente.entrenar(batch_size,agente.memory)     
                             
             time=time+1
-                
+        agente.entrenar(len(agente.memoria_maestro),agente.memoria_maestro)        
         if e%10==0 and e>9:
                  
             plt.plot(es,recom)
@@ -287,10 +291,10 @@ if __name__ == "__main__":
             plt.show()
             
         if e>=350:
-            agente.guardar_modelo("DNN-interactive-agente")
+            agente.guardar_modelo("DNN-interactive-agenteIthan")
             data={'recom':recom,'times':times}
             df = pd.DataFrame(data, columns = ['recom', 'times'])
-            df.to_csv('DNN-interactive-agente.csv')
+            df.to_csv('DNN-interactive-agenteIthan.csv')
             break
         
         sim.restartScenario()
