@@ -202,7 +202,7 @@ if __name__ == "__main__":
     timer=0
     timercum=0
     
-
+    """
     while len(agente.memory) < 900:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -227,11 +227,12 @@ if __name__ == "__main__":
 
     agente.guardar_memoria("1000 pasos")
     timercum=0
+    """
     
     count=0
     
     # Interactive inicio early advising (se enseña cuando el agente aun no conose muy bien el escenario)
-    
+    agente.cargar_memoria("1000 pasos")
     while  count <= 100:
         action = agente.decision_maestro(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -257,9 +258,14 @@ if __name__ == "__main__":
                         
         timer=timer+1
         count=count+1
-    
+        
+    agente.guardar_modelo("DNN-interactive-humano-....")
+    data={'recom':recom,'times':times}
+    df = pd.DataFrame(data, columns = ['recom', 'times'])
+    df.to_csv('"DNN-interactive-humano-.....".csv')    
+
     timercum=0
-    
+    """
     for e in range(agente.episodios):
         state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
         rewardCum=0
@@ -299,10 +305,10 @@ if __name__ == "__main__":
             plt.show()
             
         if e>=350:
-            agente.guardar_modelo("DNN-interactive-humano-Javier")
+            agente.guardar_modelo("DNN-interactive-humano-....")
             data={'recom':recom,'times':times}
             df = pd.DataFrame(data, columns = ['recom', 'times'])
-            df.to_csv('DNN-interactive-humano-Javier.csv')
+            df.to_csv('"DNN-interactive-humano-.....".csv')
             break
         
         sim.restartScenario()
@@ -314,8 +320,8 @@ if __name__ == "__main__":
     plt.show()
     plt.plot(es,times)
     plt.show()           
-    
-  
+    """
+  # desde aqui de se comenta
 """
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
