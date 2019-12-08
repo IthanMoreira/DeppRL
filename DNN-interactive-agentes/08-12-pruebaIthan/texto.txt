@@ -1,0 +1,2 @@
+Este agente se incorporo una memoria con 
+los 100 mov del maestro y se entrena con esta memoria al terminar los episodios 

@@ -36,7 +36,7 @@ class Deep_NN:
         self.gamma = 0.9 #0.4
         self.estado=estado #imagen de entrada matriz
         self.memory = deque(maxlen=20000)
-        self.memoria_maestro = deque(maxlen=2000)#------------------------------------------------
+        #self.memoria_maestro = deque(maxlen=2000)#------------------------------------------------
         self.cantidad_acciones = cantidad_acciones # numero de acciones posibles  
         self.longitud=64
         self.altura = 64
@@ -76,8 +76,8 @@ class Deep_NN:
     def experiencia(self, estado, accion, recompensa, estado_siguiente, logrado):
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
         
-    def experiencia_maestro(self, estado, accion, recompensa, estado_siguiente, logrado):#--------------------------
-        self.memoria_maestro.append((estado, accion, recompensa, estado_siguiente, logrado))
+    #def experiencia_maestro(self, estado, accion, recompensa, estado_siguiente, logrado):#--------------------------
+    #    self.memoria_maestro.append((estado, accion, recompensa, estado_siguiente, logrado))
 
     def decision(self, estado): #toma una accion sea random o la mayor
         
@@ -234,7 +234,7 @@ if __name__ == "__main__":
             
         rewardCum=reward+rewardCum
         agente.experiencia(state, action, reward, next_state, done)  
-        agente.experiencia_maestro(state, action, reward, next_state, done)              
+        #agente.experiencia_maestro(state, action, reward, next_state, done)              
         state = next_state
         
         if done or timer>250:
@@ -282,7 +282,7 @@ if __name__ == "__main__":
                 agente.entrenar(batch_size,agente.memory)     
                             
             time=time+1
-        agente.entrenar(len(agente.memoria_maestro),agente.memoria_maestro)        
+        #agente.entrenar(len(agente.memoria_maestro),agente.memoria_maestro)        
         if e%10==0 and e>9:
                  
             plt.plot(es,recom)
