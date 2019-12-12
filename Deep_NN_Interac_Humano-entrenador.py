@@ -228,7 +228,7 @@ if __name__ == "__main__":
     agente.guardar_memoria("1000 pasos")
     timercum=0
     """
-    
+    """
     count=0
     
     # Interactive inicio early advising (se enseña cuando el agente aun no conose muy bien el escenario)
@@ -259,70 +259,75 @@ if __name__ == "__main__":
         timer=timer+1
         count=count+1
         
-    agente.guardar_modelo("DNN-interactive-humano-....")
-    data={'recom':recom,'times':times}
-    df = pd.DataFrame(data, columns = ['recom', 'times'])
-    df.to_csv('"DNN-interactive-humano-.....".csv')    
+    agente.guardar_modelo("DNN-interactive-humano-.....")
+    agente.guardar_memoria("memoria-....")
 
     timercum=0
     """
-    for e in range(agente.episodios):
-        state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-        rewardCum=0
-        time=0
+    lista=["CamilaHuenchu","ConsueloCelis","ConsueloMarchant","CamilaNavarro","JavieraLuengo","RebecaTello"]
+    for x in lista:
         
-        while True:
-            action = agente.decision(state)#int(input("accion = "))
-            ultima_accion=action
-            next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            #if reward==-0.01 and time>6:
-            #    reward=reward*(time-6)
-            agente.experiencia(state, action, reward, next_state, done)          
+        agente.cargar_memoria("memoria-"+x)
+        agente.cargar_modelo("DNN-interactive-humano-"+x)
+        
+        for e in range(agente.episodios):
+            state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+            rewardCum=0
+            time=0
             
-            state = next_state
-            
-            rewardCum=reward+rewardCum
-            
-            if done or time>250:
-                timercum=time+timercum
-                times.append(time)
-                recom.append(rewardCum)
-                es.append(e)
-                print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                terminado=terminado+1
+            while True:
+                action = agente.decision(state)#int(input("accion = "))
+                ultima_accion=action
+                next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+                #if reward==-0.01 and time>6:
+                #    reward=reward*(time-6)
+                agente.experiencia(state, action, reward, next_state, done)          
+                
+                state = next_state
+                
+                rewardCum=reward+rewardCum
+                
+                if done or time>250:
+                    timercum=time+timercum
+                    times.append(time)
+                    recom.append(rewardCum)
+                    es.append(e)
+                    print("episode: ",e," score: ",rewardCum," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                    terminado=terminado+1
+                    break
+                    
+                if len(agente.memory) >= batch_size:
+                    agente.entrenar(batch_size,agente.memory)     
+                                
+                time=time+1
+                    
+            if e%10==0 and e>9:
+                     
+                plt.plot(es,recom)
+                plt.show()
+                plt.plot(es,times)
+                plt.show()
+                
+            if e>=350:
+                agente.guardar_modelo("DNN-interactive-humano-"+x)
+                data={'recom':recom,'times':times}
+                df = pd.DataFrame(data, columns = ['recom', 'times'])
+                df.to_csv('"DNN-interactive-humano-"'+x+'.csv')
                 break
-                
-            if len(agente.memory) >= batch_size:
-                agente.entrenar(batch_size,agente.memory)     
-                            
-            time=time+1
-                
-        if e%10==0 and e>9:
-                 
-            plt.plot(es,recom)
-            plt.show()
-            plt.plot(es,times)
-            plt.show()
             
-        if e>=350:
-            agente.guardar_modelo("DNN-interactive-humano-....")
-            data={'recom':recom,'times':times}
-            df = pd.DataFrame(data, columns = ['recom', 'times'])
-            df.to_csv('"DNN-interactive-humano-.....".csv')
-            break
-        
-        sim.restartScenario()
-        tim.sleep(1)
-
-    #plt.plot(times,recom) 
-    #plt.show()               
-    plt.plot(es,recom)
-    plt.show()
-    plt.plot(es,times)
-    plt.show()           
+            sim.restartScenario()
+            tim.sleep(1)
+    
+        #plt.plot(times,recom) 
+        #plt.show()               
+        plt.plot(es,recom)
+        plt.show()
+        plt.plot(es,times)
+        plt.show()   
+            
     """
   # desde aqui de se comenta
-"""
+
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
     tar=agente.modelo.predict(next_state)
