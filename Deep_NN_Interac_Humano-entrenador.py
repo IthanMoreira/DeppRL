@@ -325,7 +325,7 @@ if __name__ == "__main__":
         plt.plot(es,times)
         plt.show()   
             
-    """
+    
   # desde aqui de se comenta
 
     
@@ -354,7 +354,7 @@ if __name__ == "__main__":
           #   agent.save("./save/cartpole-dqn.h5")
     #agente.guardar_memoria("prueba")
     #agente.cargar_modelo("6 figuras 30 buenos")
-"""     
+    
         time=0
         e=1
         ee=0.91
