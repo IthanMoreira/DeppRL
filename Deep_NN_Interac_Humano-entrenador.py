@@ -132,8 +132,8 @@ class Deep_NN:
             self.epsilon *= self.epsilon_decay
 
     def cargar_modelo(self, name):
-        self.modelo=load_model('modelo_'+name)
-        self.modelo.load_weights('pesos_'+name)
+        self.modelo=load_model('DNN-interactive-humano/modelo_'+name)
+        self.modelo.load_weights('DNN-interactive-humano/pesos_'+name)
         
    
     def guardar_modelo(self, name):
@@ -144,12 +144,12 @@ class Deep_NN:
      
     def guardar_memoria(self, name):
         #print (self.memory)
-        file=open(name,'wb')               #file object in binary write mode
+        file=open("DNN-interactive-humano/"+name,'wb')               #file object in binary write mode
         pickle.dump(self.memory,file)      #dump the data in the file object
         file.close()                       #close the file to write into the file
         
     def cargar_memoria(self, name):
-       file=open(name,'rb')  #file object in binary read mode
+       file=open("DNN-interactive-humano/"+name,'rb')  #file object in binary read mode
        data=pickle.load(file)      #load the data back
        file.close()
        self.memory=data
@@ -264,11 +264,12 @@ if __name__ == "__main__":
 
     timercum=0
     """
-    lista=["CamilaHuenchu","ConsueloCelis","ConsueloMarchant","CamilaNavarro","JavieraLuengo","RebecaTello"]
+    lista=["RebecaTello","karin"]
     for x in lista:
         
         agente.cargar_memoria("memoria-"+x)
         agente.cargar_modelo("DNN-interactive-humano-"+x)
+        
         
         for e in range(agente.episodios):
             state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
@@ -312,11 +313,25 @@ if __name__ == "__main__":
                 agente.guardar_modelo("DNN-interactive-humano-"+x)
                 data={'recom':recom,'times':times}
                 df = pd.DataFrame(data, columns = ['recom', 'times'])
-                df.to_csv('"DNN-interactive-humano-"'+x+'.csv')
+                df.to_csv('DNN-interactive-humano-'+x+'.csv')
                 break
             
             sim.restartScenario()
             tim.sleep(1)
+        agente.epsilon=1
+        state=sim.kinectVisionRGB()
+        agente = Deep_NN(estado=state)     
+        #agente.modelo.summary()
+        done = False
+        terminado = 0 
+        batch_size = 128
+        times=[]
+        recom=[]
+        es=[]
+        rewardCum=0
+        timer=0
+        timercum=0
+            
     
         #plt.plot(times,recom) 
         #plt.show()               
