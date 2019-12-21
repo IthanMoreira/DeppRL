@@ -1,3 +1,4 @@
+#minimo 250 y es -2.51
 # -*- coding: utf-8 -*-
 """
 Created on Sat Sep 28 15:09:29 2019
@@ -259,12 +260,13 @@ if __name__ == "__main__":
         timer=timer+1
         count=count+1
         
-    agente.guardar_modelo("DNN-interactive-humano-.....")
-    agente.guardar_memoria("memoria-....")
+    agente.guardar_modelo("DNN-interactive-humano-")
+    agente.guardar_memoria("memoria-")
 
     timercum=0
     """
-    lista=["RebecaTello","karin"]
+    
+    lista=["LuisMoreno"]
     for x in lista:
         
         agente.cargar_memoria("memoria-"+x)
@@ -340,9 +342,9 @@ if __name__ == "__main__":
         plt.plot(es,times)
         plt.show()   
             
-    
-  # desde aqui de se comenta
 
+  # desde aqui de se comenta
+"""
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
     tar=agente.modelo.predict(next_state)
@@ -369,7 +371,7 @@ if __name__ == "__main__":
           #   agent.save("./save/cartpole-dqn.h5")
     #agente.guardar_memoria("prueba")
     #agente.cargar_modelo("6 figuras 30 buenos")
-    
+""" 
         time=0
         e=1
         ee=0.91

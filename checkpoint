@@ -1,2 +1,2 @@
-model_checkpoint_path: "pesos_DNN-interactive-humano-RebecaTello"
-all_model_checkpoint_paths: "pesos_DNN-interactive-humano-RebecaTello"
+model_checkpoint_path: "pesos_DNN-interactive-humano-LuisMoreno"
+all_model_checkpoint_paths: "pesos_DNN-interactive-humano-LuisMoreno"
