@@ -43,7 +43,7 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=600
+        self.episodios=350
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
@@ -212,7 +212,7 @@ if __name__ == "__main__":
             
             rewardCum=reward+rewardCum
             
-            if done or time>100:
+            if done or time>250:
                 timercum=time+timercum
                 times.append(time)
                 recom.append(round(rewardCum,2))
@@ -230,7 +230,11 @@ if __name__ == "__main__":
             plt.show()
             plt.plot(es,times)
             plt.show()
-        if e>600:
+        if e>350:
+            agente.guardar_modelo("DNN-interactive-maestro4")
+            data={'recom':recom,'times':times}
+            df = pd.DataFrame(data, columns = ['recom', 'times'])
+            df.to_csv('DNN-interactive-maestro4.csv')
             break
         sim.restartScenario()
         tim.sleep(1)
