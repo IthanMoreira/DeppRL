@@ -54,11 +54,16 @@ for x in lista:
         ti.append(ti1)    
 
 
-plt.plot(ep[0],re[0], color='red') 
-plt.plot(ep[2],re[2], color='green') 
-plt.plot(ep[1],re[1], color='blue') 
+plt.figure(figsize=(10,6))
 
-plt.plot(ep[6],re[6]) 
+plt.plot(ep[0],re[0],color="red" ,label="autonomo") 
+#plt.plot(ep[2],re[1],color="blue" , label="maestro-agente" ) 
+#plt.plot(ep[1],re[2],color="green" , label="maestro-humano")
+
+plt.legend(loc='lower right')
+plt.xlabel("Episodios")   # Establece el título del eje x
+plt.ylabel("Recompensa")   # Establece el título del eje y
+
 plt.show()
 
 
