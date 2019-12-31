@@ -27,6 +27,39 @@ lista=['Data/bueno bueno y optimoMaestro3.csv',
 
 
 
+ep=[]
+re=[]
+ti=[]
+for x in lista:
+    data1=[]
+    ep1=[]
+    re1=[]
+    ti1=[]
+    with open(x, newline='') as File:  
+        reader = csv.reader(File)
+        
+        for row in reader:
+            data1.append(row)
+        
+        del(data1[0])
+        
+        for row in data1:
+             ep1.append(int(row[0]))
+             re1.append(float(row[1]))
+             ti1.append(int(row[2]))
+             if len(ep)>350:
+                 break    
+        ep.append(ep1)
+        re.append(savgol_filter(re1, 55,3))
+        ti.append(ti1)    
+
+
+plt.plot(ep[0],re[0], color='red') 
+plt.plot(ep[2],re[2], color='green') 
+plt.plot(ep[1],re[1], color='blue') 
+
+plt.plot(ep[6],re[6]) 
+plt.show()
 
 
 
