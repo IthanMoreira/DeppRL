@@ -14,10 +14,8 @@ lista=['Data/bueno bueno y optimoMaestro3.csv',
        'Data/DNN-interactive-agenteIthan.csv',
        'Data/DNN-interactive-humano-CamilaHuenchu.csv',
        'Data/DNN-interactive-humano-CamilaNavarro.csv',
-       'Data/DNN-interactive-humano-ConsueloCelis.csv',
        'Data/DNN-interactive-humano-ConsueloMarchant.csv',
-       'Data/DNN-interactive-humano-Ithan.csv',
-       'Data/DNN-interactive-humano-Javier.csv',
+       'Data/DNN-interactive-humano-Ithan.csv',       
        'Data/DNN-interactive-humano-JavieraLuengo.csv',
        'Data/DNN-interactive-humano-karin.csv',
        'Data/DNN-interactive-humano-LuisMoreno.csv',
@@ -54,15 +52,17 @@ for x in lista:
         ti.append(ti1)    
 
 
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(20,12))
 
 plt.plot(ep[0],re[0],color="red" ,label="autonomo") 
-#plt.plot(ep[2],re[1],color="blue" , label="maestro-agente" ) 
-#plt.plot(ep[1],re[2],color="green" , label="maestro-humano")
-
-plt.legend(loc='lower right')
-plt.xlabel("Episodios")   # Establece el título del eje x
-plt.ylabel("Recompensa")   # Establece el título del eje y
+plt.plot(ep[1],re[1],color="blue" , label="maestro-agente" ) 
+plt.plot(ep[6],re[6] , label="maestro-humano1")
+plt.plot(ep[7],re[7], label="maestro-humano2")
+plt.plot(ep[4],re[4], label="maestro-humano3")
+plt.plot(ep[9],re[9], label="maestro-humano4")
+plt.legend(loc='lower right',fontsize='xx-large')
+plt.xlabel("Episodios",fontsize='xx-large')   # Establece el título del eje x
+plt.ylabel("Recompensa",fontsize='xx-large')   # Establece el título del eje y
 
 plt.show()
 
