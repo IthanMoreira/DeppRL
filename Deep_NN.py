@@ -6,6 +6,7 @@ Created on Sat Sep 28 15:09:29 2019
 """
 import pandas as pd
 import random
+import pickle
 import tensorflow as tf
 import numpy as np
 import time as tim
@@ -17,7 +18,6 @@ from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
 from collections import deque 
 import matplotlib.pyplot as plt
-    
 K.clear_session()
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True)) #el javier usa este comando
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
@@ -43,7 +43,7 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=350
+        self.episodios= 301
         self.modelo=self.contruModelo()
     
     def contruModelo (self):
@@ -68,13 +68,16 @@ class Deep_NN:
         self.memory.append((estado, accion, recompensa, estado_siguiente, logrado))
 
     def decision(self, estado): #toma una accion sea random o la mayor
-        if np.random.rand() <= self.epsilon:
-            return random.randrange(self.cantidad_acciones)
         valores = self.modelo.predict(estado)
+        if np.random.rand() <= self.epsilon:
+            x=[random.random(), random.random(), random.random(), random.random()]
+            
+            return x, valores[0]
+        #valores = self.modelo.predict(estado)
 
-        #print (valores)
+        #print (valores[0])
         #print (np.argmax(valores[0]))
-        return np.argmax(valores[0])  # accion random o mayor
+        return valores[0], valores[0] # accion random o mayor
        
     def entrenar(self, batch_size, memo):
         miniBatch = random.sample(self.memory, batch_size)#con lo guardado se entrena la red con experiencias random
@@ -118,7 +121,19 @@ class Deep_NN:
         self.modelo.save('modelo_'+name)
         self.modelo.save_weights('pesos_'+name)
         
-
+    def cargar_memoria(self, name):
+       file=open("DNN-interactive-humano/"+name,'rb')  #file object in binary read mode
+       data=pickle.load(file)      #load the data back
+       file.close()
+       self.memory=data
+       #print(data)
+    def pSuccess(Q, reward, gamma):
+        n = np.log(Q/reward)/np.log(gamma) #corresponde a Eq. 6 del paper. Python no tiene logaritmo en base gamma, pero por propiedades de logaritmos se puede calcular en base 10 y dividir por el logaritmos de gamma. Es lo mismo, cualquier duda revisar propiedades de logaritmos.
+        log10baseGamma = np.log(10)/np.log(gamma) # Es un valor constante. Asumiendo que gamma no cambia. Se ocupa en la linea que viene a continuacion
+        probOfSuccess = (n / (2*log10baseGamma)) + 1 #Corresponde a Eq. 7 del paper. Sin considerar la parte estocastica.
+        probOfSuccessLimit = np.minimum(1,np.maximum(0,probOfSuccess)) #Corresponde a Eq. 9 del paper. Lo mismo anterior, solo que limita la probabilidad a valores entre 0 y 1.
+        #probOfSuccessLimit = probOfSuccessLimit * (1 - stochasticity) #Usar solo si usamos transiciones estocasticas o el parametro sigma
+        return probOfSuccessLimit
 if __name__ == "__main__":
     
   
@@ -162,14 +177,18 @@ if __name__ == "__main__":
     batch_size = 128
     times=[]
     recom=[]
+    QS1=[]
+    QS2=[]
+    QS3=[]
+    QS4=[]
     es=[]
     rewardCum=0
     timer=0
     timercum=0
-    
-    
+    x=0
+    """
     while len(agente.memory) <1000:
-        action = agente.decision(state)            
+        action = agente.decision(state)[0]            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
         
         if reward==-0.01 and timer>18:
@@ -190,56 +209,86 @@ if __name__ == "__main__":
         timer=timer+1
     
     timercum=0
-
-    for e in range(agente.episodios):
-        
-        state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-        rewardCum=0
-        time=0
-        
-        while True:
+    """
+    while x<2:
+        agente.cargar_memoria("1000 pasos")
+        for e in range(agente.episodios):
             
-            action = agente.decision(state)#int(input("accion = "))
-                        
-            next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            if reward==-0.01 and time>18:
-                reward=reward*(time-18)
-            elif reward==-0.01:
-                reward=0
-            agente.experiencia(state, action, reward, next_state, done)          
+            state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+            rewardCum=0
+            time=0
             
-            state = next_state
-            
-            rewardCum=reward+rewardCum
-            
-            if done or time>250:
-                timercum=time+timercum
-                times.append(time)
-                recom.append(round(rewardCum,2))
-                es.append(e)
-                print("episode: ",e," score: ",round(rewardCum,2)," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                break
+            while True:
+                Qvalue= agente.decision(state)#int(input("accion = "))
+                if time==0:
+                    Q=Qvalue[1]  
+                action = np.argmax(Qvalue[0])
+                #print(Qvalue[1])            
+                next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+                if reward==-0.01 and time>18:
+                    reward=reward*(time-18)
+                elif reward==-0.01:
+                    reward=0
+                agente.experiencia(state, action, reward, next_state, done)          
                 
-            if len(agente.memory) >= batch_size:
-                agente.entrenar(batch_size,agente.memory)     
-                            
-            time=time+1
-        if e%10==0 and e>9:
-                 
-            plt.plot(es,recom)
-            plt.show()
-            plt.plot(es,times)
-            plt.show()
-        if e>350:
-            agente.guardar_modelo("DNN-interactive-maestro4")
-            data={'recom':recom,'times':times}
-            df = pd.DataFrame(data, columns = ['recom', 'times'])
-            df.to_csv('DNN-interactive-maestro4.csv')
-            break
-        sim.restartScenario()
-        tim.sleep(1)
+                state = next_state
+                
+                rewardCum=reward+rewardCum
+                
+                if done or time>100:
+                    timercum=time+timercum
+                    times.append(time)
+                    recom.append(round(rewardCum,2))
+                    es.append(e)
+                    QS1.append(Q[0])
+                    QS2.append(Q[1])
+                    QS3.append(Q[2])
+                    QS4.append(Q[3])
+                    print(x,"episode: ",e," score: ",round(rewardCum,2)," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                    
+                    break
+                    
+                if len(agente.memory) >= batch_size:
+                    agente.entrenar(batch_size,agente.memory)     
+                                
+                time=time+1
 
-        
+            if e> 299:
+                #agente.guardar_modelo("DNN-interactive-maestro"+str(x))
+                #print(Q)
+                data={'recom':recom,'times':times, 'ValorQ1':QS1,'ValorQ2':QS2,'ValorQ3':QS3,'ValorQ4':QS4}
+                df = pd.DataFrame(data, columns = ['recom', 'times','ValorQ1','ValorQ2','ValorQ3','ValorQ4'])
+                df.to_csv('DNN-interactive-maestro-V2FIN-'+str(x)+'.csv')
+                break
+            if e%10==0 and e>9:
+                     
+                plt.plot(es,recom)
+                plt.show()
+                #plt.plot(es,pSuccess(QS1, recom, 0.9),pSuccess(QS2, recom, 0.9),pSuccess(QS3, recom, 0.9),pSuccess(QS4, recom, 0.9))
+                #plt.show()
+            sim.restartScenario()
+            tim.sleep(1)
+            
+        agente.epsilon=1
+        state=sim.kinectVisionRGB()
+        agente = Deep_NN(estado=state)     
+        #agente.modelo.summary()
+        done = False
+        terminado = 0 
+        batch_size = 128
+        times=[]
+        recom=[]
+        es=[]
+        QS1=[]
+        QS2=[]
+        QS3=[]
+        QS4=[]
+        rewardCum=0
+        timer=0
+        timercum=0
+        x=x+1
+    
+    """            
     #plt.plot(times,recom) 
     #plt.show()               
     plt.plot(es,recom)
@@ -247,13 +296,14 @@ if __name__ == "__main__":
     plt.plot(es,times)
     plt.show()           
     agente.guardar_modelo("Maestro2")   
-
+    
 
    
     data={'recom':recom,'times':times}
     df = pd.DataFrame(data, columns = ['recom', 'times'])
     df.to_csv('maestro2.csv')
-"""
+    
+
     
     next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
     tar=agente.modelo.predict(next_state)

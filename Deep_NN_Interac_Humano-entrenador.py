@@ -18,7 +18,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
-from tensorflow.python.keras.models import Sequential, load_model
+from tensorflow.python.keras.models import  load_model
 from collections import deque 
 import matplotlib.pyplot as plt
     

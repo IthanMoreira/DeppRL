@@ -17,10 +17,10 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Flatten, Dense
 from tensorflow.python.keras.layers import  Convolution2D, MaxPooling2D
 from tensorflow.python.keras import backend as K
-from tensorflow.python.keras.models import Sequential, load_model
+from tensorflow.python.keras.models import  load_model
 from collections import deque 
 import matplotlib.pyplot as plt
-    
+
 K.clear_session()
 sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True)) #el javier usa este comando
 #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
@@ -48,11 +48,11 @@ class Deep_NN:
         self.filtrosConv2 = 8
         self.filtrosConv3 = 16
         self.tamano_pool = (2, 2)
-        self.episodios=600
+        self.episodios=301
         self.modelo=self.contruModelo()
         
-        self.modelo_maestro=load_model('maestro\modelo_'+"Maestro")
-        self.modelo_maestro.load_weights('maestro\pesos_'+"Maestro")
+        self.modelo_maestro=load_model('maestro\modelo_'+"Maestro3")
+        self.modelo_maestro.load_weights('maestro\pesos_'+"Maestro3")
         
     
     def contruModelo (self):
@@ -144,10 +144,11 @@ class Deep_NN:
         file.close()                #close the file to write into the file
         
     def cargar_memoria(self, name):
-       file=open(name,'rb')  #file object in binary read mode
+       file=open("DNN-interactive-humano/"+name,'rb')  #file object in binary read mode
        data=pickle.load(file)      #load the data back
        file.close()
        self.memory=data
+       #print(data)
      
 if __name__ == "__main__":
     
@@ -195,7 +196,7 @@ if __name__ == "__main__":
     rewardCum=0
     timer=0
     timercum=0
-    
+    '''
     while len(agente.memory) < 900:
         action = agente.decision(state)            
         next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
@@ -216,137 +217,105 @@ if __name__ == "__main__":
                 rewardCum=0
                 timer=0
         timer=timer+1
-    
-    timercum=0
-    
-    count=0
-    
-    # Interactive inicio early advising (se enseña cuando el agente aun no conose muy bien el escenario)
-    
-    while  count <= 100:
-        action = agente.decision_maestro(state)            
-        next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+    '''
+    x=2
+    while x<10:
+        agente.cargar_memoria("1000 pasos")
+        timercum=0
         
-        if reward==-0.01 and timer>18:
-            reward=reward*(timer-18)
-        elif reward==-0.01:
-            reward=0   
+        count=0
+        
+        # Interactive inicio early advising (se enseña cuando el agente aun no conose muy bien el escenario)
+        while  count <= 100:
+            action = agente.decision_maestro(state)            
+            next_state, reward, done = sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
             
-        rewardCum=reward+rewardCum
-        agente.experiencia(state, action, reward, next_state, done)  
-        #agente.experiencia_maestro(state, action, reward, next_state, done)              
-        state = next_state
-        
-        if done or timer>250:
-                timercum=timer+timercum
-                print(" score: ",round(rewardCum,2)," time : ",timer," timeTotal : ",timercum)#                      
-                sim.restartScenario()
-                rewardCum=0
-                timer=0
-        
-        if len(agente.memory) >= batch_size:
-            agente.entrenar(batch_size,agente.memory) 
-                        
-        timer=timer+1
-        count=count+1
-    
-    timercum=0
-    
-    for e in range(agente.episodios):
-        state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
-        rewardCum=0
-        time=0
-        
-        while True:
-            action = agente.decision(state)#int(input("accion = "))
-            ultima_accion=action
-            next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
-            #if reward==-0.01 and time>6:
-            #    reward=reward*(time-6)
-            agente.experiencia(state, action, reward, next_state, done)          
-            
+            if reward==-0.01 and timer>18:
+                reward=reward*(timer-18)
+            elif reward==-0.01:
+                reward=0   
+                
+            rewardCum=reward+rewardCum
+            agente.experiencia(state, action, reward, next_state, done)  
+            #agente.experiencia_maestro(state, action, reward, next_state, done)              
             state = next_state
             
-            rewardCum=reward+rewardCum
+            if done or timer>250:
+                    timercum=timer+timercum
+                    print(" score: ",round(rewardCum,2)," time : ",timer," timeTotal : ",timercum)#                      
+                    sim.restartScenario()
+                    rewardCum=0
+                    timer=0
             
-            if done or time>250:
-                timercum=time+timercum
-                times.append(time)
-                recom.append(round(rewardCum,2))
-                es.append(e)
-                print("episode: ",e," score: ",round(rewardCum,2)," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
-                terminado=terminado+1
-                break
-                
             if len(agente.memory) >= batch_size:
-                agente.entrenar(batch_size,agente.memory)     
-                            
-            time=time+1
-        #agente.entrenar(len(agente.memoria_maestro),agente.memoria_maestro)        
-        if e%10==0 and e>9:
-                 
-            plt.plot(es,recom)
-            plt.show()
-            plt.plot(es,times)
-            plt.show()
-            
-        if e>=350:
-            agente.guardar_modelo("DNN-interactive-agenteIthan")
-            data={'recom':recom,'times':times}
-            df = pd.DataFrame(data, columns = ['recom', 'times'])
-            df.to_csv('DNN-interactive-agenteIthan.csv')
-            break
+                agente.entrenar(batch_size,agente.memory) 
+                        
+            timer=timer+1
+            count=count+1
         
-        sim.restartScenario()
-        tim.sleep(1)
-
-    #plt.plot(times,recom) 
-    #plt.show()               
-    plt.plot(es,recom)
-    plt.show()
-    plt.plot(es,times)
-    plt.show()           
-    
-  
-"""
-    
-    next_state, reward, done= sim.seleccion(2) # segun la accion retorna desde el entorno todo eso    
-    tar=agente.modelo.predict(next_state)
-    tar[0][0]=0
-    tar[0][1]=1
-    tar[0][2]=0
-    tar[0][3]=0
-    for x in range(1000):
-        his=agente.modelo.fit(next_state,tar,epochs=1, verbose=0)
-    
-    type(his)
-    plt.figure(0)  
-    plt.plot(his.history['acc'],'r')  
-    plt.plot(his.history['val_acc'],'g')  
-    plt.xticks(np.arange(0, 11, 2.0))  
-    plt.rcParams['figure.figsize'] = (8, 6)  
-    plt.xlabel("Numero de Epocas")  
-    plt.ylabel("Precisión")  
-    plt.title("Precisión de entrenamiento vs Precisión de Validación")  
-    plt.legend(['entrenamiento','Validación'])
-    
-    """
-         #if e % 10 == 0:
-          #   agent.save("./save/cartpole-dqn.h5")
-        #agente.guardar_modelo("6 figuras 30 buenos")
-    #agente.cargar_modelo("6 figuras 30 buenos")
-"""     
-        time=0
-        e=1
-        ee=0.91
-        while True:
-            time=time+1
-            if e > 0.01:
-                e *= ee
-            else:
-                print(time)
-                break
+        timercum=0
+        
+        for e in range(agente.episodios):
+            state = sim.kinectVisionRGB()# reseteo el estaado y le entrego la imagen nuevamente
+            rewardCum=0
+            time=0
+            
+            while True:
+                action = agente.decision(state)#int(input("accion = "))
+                ultima_accion=action
+                next_state, reward, done= sim.seleccion(action) # segun la accion retorna desde el entorno todo eso
+                #if reward==-0.01 and time>6:
+                #    reward=reward*(time-6)
+                agente.experiencia(state, action, reward, next_state, done)          
                 
+                state = next_state
+                
+                rewardCum=reward+rewardCum
+                
+                if done or time>250:
+                    timercum=time+timercum
+                    times.append(time)
+                    recom.append(round(rewardCum,2))
+                    es.append(e)
+                    print(x,"episode: ",e," score: ",round(rewardCum,2)," e : ",agente.epsilon," time ",time ," timeTotal : ",timercum)#
+                    terminado=terminado+1
+                    break
+                    
+                if len(agente.memory) >= batch_size:
+                    agente.entrenar(batch_size,agente.memory)     
+                                
+                time=time+1
+            #agente.entrenar(len(agente.memoria_maestro),agente.memoria_maestro)        
+            if e%10==0 and e>9:
+                     
+                plt.plot(es,recom)
+                plt.show()
+                plt.plot(es,times)
+                plt.show()
+                
+            if e>299:
+                agente.guardar_modelo("DNN-interactive-agente"+str(x))
+                data={'recom':recom,'times':times}
+                df = pd.DataFrame(data, columns = ['recom', 'times'])
+                df.to_csv('DNN-interactive-agente'+str(x)+'.csv')
+                break
+            
+            sim.restartScenario()
+            tim.sleep(1)
 
-"""     
+        agente.epsilon=1
+        state=sim.kinectVisionRGB()
+        agente = Deep_NN(estado=state)     
+        #agente.modelo.summary()
+        done = False
+        terminado = 0 
+        batch_size = 128
+        times=[]
+        recom=[]
+        es=[]
+        rewardCum=0
+        timer=0
+        timercum=0
+        x=x+1        
+    
 

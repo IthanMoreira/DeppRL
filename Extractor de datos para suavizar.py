@@ -21,7 +21,8 @@ lista=['Data/bueno bueno y optimoMaestro3.csv',
        'Data/DNN-interactive-humano-LuisMoreno.csv',
        'Data/DNN-interactive-humano-MatiasHuenchu.csv',
        'Data/DNN-interactive-humano-RebecaTello.csv',
-       'Data/DNN-interactive-humano-yohan.csv']
+       'Data/DNN-interactive-humano-yohan.csv',
+       'Data/DNN-interactive-humano-ConsueloCelis.csv']
 
 
 
@@ -50,39 +51,37 @@ for x in lista:
         ep.append(ep1)
         re.append(savgol_filter(re1, 55,3))
         ti.append(ti1)    
-
-
-plt.figure(figsize=(20,12))
-
-plt.plot(ep[0],re[0],color="red" ,label="autonomo") 
-plt.plot(ep[1],re[1],color="blue" , label="maestro-agente" ) 
-plt.plot(ep[6],re[6] , label="maestro-humano1")
-plt.plot(ep[7],re[7], label="maestro-humano2")
-plt.plot(ep[4],re[4], label="maestro-humano3")
-plt.plot(ep[9],re[9], label="maestro-humano4")
-plt.legend(loc='lower right',fontsize='xx-large')
-plt.xlabel("Episodios",fontsize='xx-large')   # Establece el título del eje x
-plt.ylabel("Recompensa",fontsize='xx-large')   # Establece el título del eje y
-
-plt.show()
+      
 
 
 
+f = plt.figure(1)   
+plt.rcParams.update({'font.size': 14})
 
-
-'''
-
-
-yhat2 = savgol_filter(re2, 9,3) # window size 51, polynomial order 3 plt.plot(x,y) plt.plot(x,yhat, color='red') plt.show()
-
-yhat = savgol_filter(re, 9, 3) # window size 51, polynomial order 3 plt.plot(x,y) plt.plot(x,yhat, color='red') plt.show()
-
-#plt.plot(ep,re) 
-plt.plot(ep,yhat, color='red') 
-plt.plot(ep2,yhat2, color='blue') 
-
-plt.show()
-'''
-
+plt.plot(ep[0],re[0],color="red" ,label="autonomous DeepRL",linestyle = '-') 
+#plt.plot(ep[1],re[1],color="blue" , label="agent-IDeepRL" , linestyle = '-')
  
- 
+plt.plot(ep[6],re[6] , label="human-IDeepRL1",linestyle = '-',color='green')
+#plt.plot(ep[7],re[7], label="human-IDeepRL2",linestyle = '-')
+#plt.plot(ep[4],re[4], label="human-IDeepRL1",linestyle = '-')
+#plt.plot(ep[9],re[9], label="human-IDeepRL4",linestyle = '-',color='y')
+#plt.plot(ep[10],re[10], label="human-IDeepRL5",linestyle = '-',color='r')
+plt.plot(ep[2],re[2], label="human-IDeepRL2",linestyle = '-')
+#plt.plot(ep[3],re[3], label="human-IDeepRL7",linestyle = '-')
+#plt.plot(ep[5],re[5], label="human-IDeepRL8",linestyle = '-')
+plt.plot(ep[8],re[8], label="human-IDeepRL3",linestyle = '-')
+#plt.plot(ep[11],re[11], label="human-IDeepRL10",linestyle = '-')
+#plt.plot(ep[12],re[12], label="human-IDeepRL11",linestyle = '-')
+plt.legend(loc='lower right',fontsize='small')
+plt.xlabel("Episode",fontsize='xx-large')   # Establece el título del eje x
+plt.ylabel("Reward",fontsize='xx-large')   # Establece el título del eje y
+#       plt.title(title)
+plt.legend(loc='best',prop={'size':1})
+plt.xlabel("Episodes")
+plt.ylabel("Reward")
+plt.grid()
+plt.xlim(0, 300)
+plt.ylim(-3, 3)
+plt.show()   
+
+#f.savefig('graf3.pdf', bbox_inches='tight')

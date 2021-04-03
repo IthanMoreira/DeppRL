@@ -9,8 +9,8 @@ import math
 import numpy as np
 import time
 import random
-import matplotlib.pyplot as plt
-import cv2
+#import matplotlib.pyplot as plt
+#import cv2
 class Simulador(object):
  
     def __init__(self):
@@ -133,7 +133,7 @@ class Simulador(object):
         if errorCode1==vrep.simx_error_noerror and errorCode==vrep.simx_error_noerror :
             returnCode,positionTar=vrep.simxGetObjectPosition(self.clientID,handleJoint,-1,vrep.simx_opmode_blocking)
             returnCode,positionObj1=vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_blocking)
-            n=(positionObj1[0],positionObj1[1],positionObj1[2]+0.25)
+            n=(positionObj1[0],positionObj1[1],positionObj1[2]+0.3)
             vrep.simxSetObjectPosition(self.clientID,handleJoint,-1,n,vrep.simx_opmode_oneshot)
             self.mesa=obj
             time.sleep(1)                     
@@ -190,6 +190,7 @@ class Simulador(object):
         errorCode1, handleJoint = vrep.simxGetObjectHandle(self.clientID, moveTarget, vrep.simx_opmode_oneshot_wait)
         
         if (len(self.porTomar)!=0):
+            self.objetoTomado()
             if (self.objTomado == 0):
                 obj=random.choice(self.porTomar)
                 bandera=True
@@ -405,12 +406,12 @@ class Simulador(object):
             return self.completado()
                 
         if(accion==1):
-            self.moverLados('m_Sphere','customizableTable_tableTop#0')  
+            self.moverLados('m_Sphere','customizableTable_tableTop#0')  #DER
             time.sleep(0.5)    
             return self.completado()
         
         if(accion==2):
-            self.moverLados('m_Sphere','customizableTable_tableTop#1')
+            self.moverLados('m_Sphere','customizableTable_tableTop#1') #IZq
             time.sleep(0.5)                    
             return self.completado()
         
