@@ -1,8 +1,3 @@
-Make sure you have following files in your directory, in order to run the various examples:
+Proyecto de investigación sobre el aprendizaje por refuerzo profundo con retroalimentación interactivo para más información revisar la siguiente publicación 
 
-1. vrep.py
-2. vrepConst.py
-3. the appropriate remote API library: "remoteApi.dll" (Windows), "remoteApi.dylib" (Mac) or "remoteApi.so" (Linux)
-4. simpleTest.py (or any other example file)
-
-Deep_NN es el agente y Simulador el controlador del entorno
+https://www.mdpi.com/2076-3417/10/16/5574
